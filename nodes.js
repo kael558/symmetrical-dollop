@@ -17,8 +17,14 @@ import {
   properties, colors, UNCOLLECTED_ATTRIBUTE_NODE
 } from './nodeData';
 
+const w = 960;
+const h = 960;
+
 export const selected_nodes = {};
-export const nodes_svg = select('#nodes');
+export const nodes_svg = select('#nodes')
+				.attr('height', h)
+				.attr('width', w)
+
 const width = +nodes_svg.attr('width');
 const height = +nodes_svg.attr('height');
 const centerX = width / 2;

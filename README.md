@@ -1,12 +1,15 @@
 TODO
-when clicking on color, make sure the attribute node is green
+Functional:
+- If node is selected, ensure at least one previous node is green
+- sunburst pattern for main viz
+- add other 2 heat maps (for feestat and age)
 
-fix text alignment
+Non-Functional:
+- fix text alignment
+- play around with hyperparameters of force graph so it is moves more naturally.
+- add hover highlight
+- add tooltips for heatmaps
 
-fix hyperparameters of force graph so it is more natural.
 
-visualize button
 
-sunburst pattern
 
-hide force directed graph
