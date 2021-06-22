@@ -64,16 +64,13 @@ const allNodes = nodes_svg
 
 
 
-let toggleNode = (node, node_type) => {
-  
-  
+let toggleNode = (function(){
   let currentColor = colors.Unselected;
-  if (colors.Unselected){
-  	  
+  return function(){
+      currentColor = currentColor == colors.Unselected ? colors.Selected : colors.Unselected;
+			d3.select(this).style("fill", currentColor);
   }
-  currentColor = currentColor == colors.Unselected ? colors.Selected : colors.Unselected;
-	d3.select(node).style("fill", currentColor);
-};
+})();
 
 
 for (const node_type in properties){
@@ -88,7 +85,7 @@ for (const node_type in properties){
   }
   
   if (node_type !== UNCOLLECTED_ATTRIBUTE_NODE)
-    selector.on('click', function(){ toggleNode(this, node_type)});
+    selector.on('click', toggleNode);
 }
 
 allNodes.append('text')
