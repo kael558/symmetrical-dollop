@@ -5,8 +5,8 @@ export class Chart {
       // Exposed variables
       const attrs = {
           id: `ID${Math.floor(Math.random() * 1000000)}`, // Id for event handlings
-          svgWidth: 800,
-          svgHeight: 600,
+          svgWidth: 1200,
+          svgHeight: 1200,
           marginTop: 0,
           marginBottom: 0,
           marginRight: 0,
