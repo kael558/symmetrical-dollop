@@ -126,6 +126,7 @@ export class Sunburst {
     
     	//hierarchial tree legend
       let legend = d3.select("#sunburst-legend")
+   		legend.selectAll("*").remove();
       let y = 24;
     	let x = 20;
       for (const array of Object.values(diversityValues)){
