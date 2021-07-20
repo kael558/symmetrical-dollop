@@ -4,6 +4,27 @@ body {
   font-family: sans-serif;
 }
 
+.legend{
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+}
+
+.chart-container{
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+.bordered{
+	fill-opacity: 0;
+  border-style: solid;
+  border-width: 5px;
+  border-color: green;
+}
+
+
 #visualize-button {
 	position: absolute;
   background: rgba(100,100,100,0);
@@ -11,13 +32,25 @@ body {
   right:50px;
   width: 100px;
   height: 50px;
+  border-radius: 10px;
 }
 
 #back-button {
 	position: absolute;
   background: rgba(100,100,100,0);
-  top:50px;
-  left:50px;
+  top:25px;
+  left:25px;
   width: 100px;
   height: 50px;
+  border-radius: 10px;
+}
+
+#compare-button {
+  position: absolute;
+  background: rgba(100,100,100,0);
+  top:25px;
+  left:125px;
+  width: 100px;
+  height: 50px;
+  border-radius: 10px;
 }

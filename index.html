@@ -2,20 +2,40 @@
 <html>
   <head>
     <title>Visualization</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/d3@6.2.0/dist/d3.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/d3@5.15.1/dist/d3.min.js"></script>
+    <script type="module" src="charts.js"></script>
   </head>
   <body>
     <div id="node-div">
-      <svg id="nodes"></svg>
+      <div
+      	id="chart"
+        class="chart-container"
+        style="
+          padding-top: 10px;
+          width: 1200px;
+          height: 1200px;
+        "
+      ></div>
+      <svg class="legend" id="node-legend" width=150 height=120></svg>
       <button type="button" id="visualize-button">Visualize</button>
     </div>
-    
+
     <div id="viz-div">
-    	<svg id="main"></svg>
-      <svg id="side"></svg>
+       <div
+      	id="sunburst"
+        class="sunburst-container"
+        style="
+          padding-top: 10px;
+          width: 1200px;
+          height: 1200px;
+        "
+      ></div>
+      <svg class="legend" id="sunburst-legend" width=150 height=1200></svg>
       <button type="button" id="back-button">Back</button>
+      <button type="button" id="compare-button">Compare</button>
     </div>
-	<script src="bundle.js"></script>
+
+    <script src="bundle.js"></script>
   </body>
 </html>

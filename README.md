@@ -1,12 +1,4 @@
-TODO
-when clicking on color, make sure the attribute node is green
-
-fix text alignment
-
-fix hyperparameters of force graph so it is more natural.
-
-visualize button
-
-sunburst pattern
-
-hide force directed graph
+ConnectorDepth for study status, level 1
+Rest is level 2.
+See line 374 for path.
+Make a group element for multiple paths to multi parents
