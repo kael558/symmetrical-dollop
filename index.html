@@ -12,25 +12,35 @@
       	id="chart"
         class="chart-container"
         style="
-          padding-top: 10px;
-          width: 2000px;
-          height: 2000px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
         "
       ></div>
       <svg class="legend" id="node-legend" width=150 height=120></svg>
       <button type="button" id="visualize-button">Visualize</button>
     </div>
-
-    <div id="viz-div">
-       <div
+ 
+    <div id="viz-div" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        ">
+       <svg
       	id="sunburst"
         class="sunburst-container"
         style="
-          padding-top: 10px;
-          width: 2000px;
-          height: 2000px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
         "
-      ></div>
+      ></svg>
       <svg class="legend" id="sunburst-legend" width=150 height=1200></svg>
       <button type="button" id="back-button">Back</button>
       <button type="button" id="compare-button">Compare</button>

@@ -5,8 +5,8 @@ export class Chart {
       // Exposed variables
       const attrs = {
           id: `ID${Math.floor(Math.random() * 1000000)}`, // Id for event handlings
-          svgWidth: 1200,
-          svgHeight: 1200,
+          svgWidth: 800,
+          svgHeight: 600,
           marginTop: 0,
           marginBottom: 0,
           marginRight: 0,
@@ -30,9 +30,9 @@ export class Chart {
              'Study Status': ['Total']
           },
         	diversityValues: {     
-              Age: ['Total'],
-              Sex:  ['Total'],
-              'Citizenship Status': ['Total']
+              Age: [],
+              Sex:  [],
+              'Citizenship Status': []
           },
           onNodeClick: null,
       };
@@ -437,7 +437,7 @@ export class Chart {
                       attrs.diversityValues[data.parentNodeIds[0]].splice(index, 1);
                       data.borderWidth = 2;
                    } else {
-                     attrs.diversityValues[data.parentNodeIds[0]].splice(0, 0, data.nodeId);
+                    attrs.diversityValues[data.parentNodeIds[0]].push(data.nodeId);
                      data.borderWidth = 10;
                    }
                 } else if (attrs.academicValues[data.parentNodeIds[0]]){

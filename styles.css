@@ -6,7 +6,7 @@ body {
 
 .legend{
   position: fixed;
-  top: 0;
+  top: 50px;
   right: 0;
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
 }
@@ -24,13 +24,18 @@ body {
   border-color: green;
 }
 
+#sunburst-legend{
+  top: 100px;
+  
+}
+
 
 #visualize-button {
 	position: absolute;
   background: rgba(100,100,100,0);
-  bottom:50px;
-  right:50px;
-  width: 100px;
+  top:0px;
+  right:10px;
+  width: 130px;
   height: 50px;
   border-radius: 10px;
 }
@@ -38,9 +43,9 @@ body {
 #back-button {
 	position: absolute;
   background: rgba(100,100,100,0);
-  top:25px;
-  left:25px;
-  width: 100px;
+  top:0px;
+  right:10px;
+  width: 130px;
   height: 50px;
   border-radius: 10px;
 }
@@ -48,9 +53,9 @@ body {
 #compare-button {
   position: absolute;
   background: rgba(100,100,100,0);
-  top:25px;
-  left:125px;
-  width: 100px;
+  top:50px;
+  right:10px;
+  width: 130px;
   height: 50px;
   border-radius: 10px;
 }
