@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   }
   
   function displayViz(){
+      let test = false;
     	let academicValuesTest = {
            	 'Academic Year': ['Total'],
              Degree: ['Bachelors', 'Masters', 'Ph.D.'],
@@ -28,11 +29,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
               Sex:  ['Male', 'Female'],
               'Citizenship Status': ['International', 'Domestic']
        }
-       console.log('clicked');
+
     	if (sb){
-         let diversityValues = ht.diversityValues();
+         let diversityValues = test?diversityValuesTest: ht.diversityValues();
+         let academicValues = test?academicValuesTest: ht.academicValues();
+
          let valid = false;
-         console.log(diversityValues);
+
          for (const attr in diversityValues){
         	 if (diversityValues[attr].length > 0){
              valid = true;
@@ -44,7 +47,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         		alert('Please select at least one diversity attribute');  
          } else {
            	 console.log('Valid');
-             let academicValues = ht.academicValues();
+            
            	 document.getElementById('node-div').style.display = 'none';
 						 document.getElementById('viz-div').style.display = 'block';
       	 		 sb.initialRender(academicValues, diversityValues);

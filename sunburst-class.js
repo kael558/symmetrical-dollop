@@ -538,12 +538,15 @@ export class Sunburst {
     }
   }
   
-	displayValues(values, selectedValue){
+	displayValues(values, selectedValue, attr){
     const attrs = this.getChartState();
     const sb = this;
     
-    attrs.centerText.text(selectedValue);
-    
+    if (attr === 'Age')
+    	attrs.centerText.text('Age: ' + selectedValue);
+    else 
+      attrs.centerText.text(selectedValue);
+      
   	let sliceCount = 0;
     for (const slice in values) {
       let arcCount = 0;
@@ -652,26 +655,22 @@ export class Sunburst {
         halfSliceRadians;
       let text = getText(slice);
       let radius = innerRadius + numArcs * arcWidth + textDistance;
-      let x = 0;
       let y = -radius;
 
       let sizeMultiplier = 1.8;
-    	let outerTextSize = sizeMultiplier*(2*radius)/longestSliceTextLength;
-    
-    	let xMultiplier = 0.21;
-      x -= xMultiplier*text.length*outerTextSize; //middle text adjust
-      
+    	let outerTextSize = Math.min(sizeMultiplier*(2*radius)/longestSliceTextLength, 50);
+
       sunburstGroup
         .append('text')
-        .attr('x', x)
         .attr('y', y)
-      	.style("font-size", outerTextSize + "px")
+      	.style("text-anchor", "middle")
+      	.style('font-size', outerTextSize + "px")
         .text(text);
     };
     
     
     //arc builder
-    const arcBuilder = (sunburstGroup, arc, startAngle, endAngle, value) => {
+    const arcBuilder = (sunburstGroup, arc, startAngle, endAngle, value, attr) => {
           sunburstGroup
             .append('path')
             .datum({
@@ -689,7 +688,7 @@ export class Sunburst {
                   .duration('50')
                   .attr('opacity', '.85');
 
-                sb.displayValues(values, value);
+                sb.displayValues(values, value, attr);
               }
             })
             .on('mouseout', function (d, i) {
@@ -784,12 +783,11 @@ export class Sunburst {
         }
         
         if (sum == 0){
-          console.log(slice);
           let endAngle = Math.min(
             sliceStartAngle + arcLength,
             2 * Math.PI
           );
-          arcBuilder(sunburstGroup, arc, sliceStartAngle, endAngle, '0');
+          arcBuilder(sunburstGroup, arc, sliceStartAngle, endAngle, '0', attr);
         } else {
            for (const value in values[slice][attr]) {
               if (value == 'Total') continue;
@@ -801,7 +799,7 @@ export class Sunburst {
                 2 * Math.PI
               );
               sliceStartAngle = endAngle;
-              arcBuilder(sunburstGroup, arc, startAngle, endAngle, value);
+              arcBuilder(sunburstGroup, arc, startAngle, endAngle, value, attr);
             }
         }
         arcCount++;
