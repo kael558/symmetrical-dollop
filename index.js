@@ -17,24 +17,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
   }
   
   function displayViz(){
-  		document.getElementById('node-div').style.display = 'none';
-			document.getElementById('viz-div').style.display = 'block';
-      
-    /*
-    	let academicValues = {
+    	let academicValuesTest = {
            	 'Academic Year': ['Total'],
-             Degree: ['Total'],
-             Faculty: ['Business', 'Science', 'Public Affairs'],
-             'Study Status': ['Total']
+             Degree: ['Bachelors', 'Masters', 'Ph.D.'],
+             Faculty: ['Business'],
+             'Study Status': ['Part-time', 'Co-op']
           };
-       let diversityValues = {     
+       let diversityValuesTest = {     
               Age: ['<=17', '18-20', '26-30', '55+'],
               Sex:  ['Male', 'Female'],
               'Citizenship Status': ['International', 'Domestic']
-          }*/
+       }
+       console.log('clicked');
     	if (sb){
-         //sb.initialRender(academicValues, diversityValues);
-      	 sb.initialRender(ht.academicValues(), ht.diversityValues());
+         let diversityValues = ht.diversityValues();
+         let valid = false;
+         console.log(diversityValues);
+         for (const attr in diversityValues){
+        	 if (diversityValues[attr].length > 0){
+             valid = true;
+             break;
+           }
+         }
+        
+         if (!valid){
+        		alert('Please select at least one diversity attribute');  
+         } else {
+           	 console.log('Valid');
+             let academicValues = ht.academicValues();
+           	 document.getElementById('node-div').style.display = 'none';
+						 document.getElementById('viz-div').style.display = 'block';
+      	 		 sb.initialRender(academicValues, diversityValues);
+         }
       } else {
          alert('Please wait for the data to finish loading');
       }

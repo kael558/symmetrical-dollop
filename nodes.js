@@ -13,15 +13,18 @@ const UNCOLLECTED_VALUE_NODE = 'UNCOLLECTED_VALUE';
 const initialNodes = {
   Convocation: {
     type: REPORT_NODE,
+    description: 'The number of students that have convocated'
   },
   Demographics: {
     type: REPORT_NODE,
+    description: 'The number of students that are enrolled'
   },
   Faculty: {
     parents: ['Convocation','Demographics'],
     collectedValues: ['STEM', 'Non-STEM', 'Engineering & Design', 'Science', 'Public Affairs', 'Business', 'Arts & Social Sciences'],
   	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'Department and faculty are mapped from student degree and major or majors.'
   },
   'Academic Year': {
     parents: ['Convocation','Demographics'],
@@ -34,7 +37,8 @@ const initialNodes = {
       '2019/20',
       '2020/21',],
   	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'Academic Year is made up of three terms (Summer, Fall, Winter)'
   },
   Degree: {
     parents: ['Convocation','Demographics'],
@@ -42,7 +46,8 @@ const initialNodes = {
       'Masters',
       'Ph.D.'],
   	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'Level of study of a student'
   },
  
   'Study Status': {
@@ -51,14 +56,16 @@ const initialNodes = {
       'Full-time',
       'Co-op'],
   	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'A full-time student is enrolled in 3 or more credits across the Fall and Winter terms whereas a part-time student is enrolled in less'
   },
   'Citizenship Status': {
     parents: ['Demographics'],
     collectedValues: ['Domestic',
       'International'],
   	uncollectedValues: [],
-    type: EDI_ATTRIBUTE_NODE
+    type: EDI_ATTRIBUTE_NODE,
+    description: 'Students are categorized based on whether they are charged domestic or international fees'
   },
   Age: {
     parents: ['Demographics'],
@@ -74,66 +81,77 @@ const initialNodes = {
     ],
     uncollectedValues: ['55-59','60-64','65-69', '70-74', '75-79', '80+'],
     type: EDI_ATTRIBUTE_NODE,
+    description: 'The age ranges of students'
   },
   Sex: {
     parents: ['Convocation','Demographics'],
     collectedValues: ['Male', 'Female'],
   	uncollectedValues: ['Non-binary'],
-    type: EDI_ATTRIBUTE_NODE
+    type: EDI_ATTRIBUTE_NODE,
+    description: 'Mislabeled. The correct label should be \'Gender\' and all genders should be collected'
 	},
   Race: {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The race of a student'
 	},
   'Religion/Spirituality': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The religion/spirituality of a student'
   },
   'Geographic Identity': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The geographic identity of a student'
   },
   'Dis/ability': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The dis/ability of a student'
   },
   Indigenuity: {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: ['First Nations', 'Metis', 'Inuit'],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The indigenuity of a student'
   },
   'First Language': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The first language of a student'
   },
   'Other Language': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The other language of a student'
   },
   'Ethnicity': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The ethnicity of a student'
   },
   'Nation': {
     parents: ['Demographics'],
   	collectedValues: [],
   	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'The nation of origin of a student'
   },
 }
 
@@ -185,7 +203,7 @@ const nodeDimensions = {
     backgroundColor: colors.Grey,
     connectorLineColor: colors.Transparent,
     expandable: true,
-    clickable: true
+    clickable: false
   },
   [ACADEMIC_ATTRIBUTE_NODE]: {
     width: sizes.Medium.width,
@@ -230,10 +248,17 @@ const makeNode = (nodeId, parentNodeIds, nodeType, parentNodeType) => {
   node.borderWidth = borderWidth;
   node.borderRadius = borderRadius;
   node.connectorLineWidth = connectorLineWidth;
-
+ 	if (initialNodes[nodeId])
+    	node.description = "" || initialNodes[nodeId].description;
+  
   if (nodeType == VALUE_NODE){
   	node.borderColor = nodeDimensions[parentNodeType].borderColor; 
     node.connectorLineColor = nodeDimensions[parentNodeType].borderColor; 
+    if (nodeId === 'STEM'){
+    	node.description = 'Aggregation of faculty of Science, Engineering & Design and Mathematics'
+    } else if (nodeId === 'Non-STEM'){
+      node.description = 'Aggregation of all non-STEM faculties'
+    } 
   } else if (nodeType === UNCOLLECTED_VALUE_NODE){
    	node.borderColor = nodeDimensions[parentNodeType].borderColor;  
   }

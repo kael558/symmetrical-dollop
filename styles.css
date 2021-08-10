@@ -24,6 +24,12 @@ body {
   border-color: green;
 }
 
+.tooltip{
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
+
 #sunburst-legend{
   top: 100px;
   
@@ -38,6 +44,7 @@ body {
   width: 130px;
   height: 50px;
   border-radius: 10px;
+  z-index: 500;
 }
 
 #back-button {
@@ -48,6 +55,7 @@ body {
   width: 130px;
   height: 50px;
   border-radius: 10px;
+  z-index: 500;
 }
 
 #compare-button {
@@ -58,4 +66,5 @@ body {
   width: 130px;
   height: 50px;
   border-radius: 10px;
+  z-index: 500;
 }
