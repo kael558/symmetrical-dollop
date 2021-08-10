@@ -46,8 +46,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
          if (!valid){
         		alert('Please select at least one diversity attribute');  
          } else {
-           	 console.log('Valid');
-            
            	 document.getElementById('node-div').style.display = 'none';
 						 document.getElementById('viz-div').style.display = 'block';
       	 		 sb.initialRender(academicValues, diversityValues);
