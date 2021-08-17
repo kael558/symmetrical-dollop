@@ -11,23 +11,23 @@ const UNCOLLECTED_VALUE_NODE = 'UNCOLLECTED_VALUE';
 
 
 const initialNodes = {
-  Convocation: {
+  Convocated: {
     type: REPORT_NODE,
-    description: 'The number of students that have convocated'
+    description: 'The number of students that have convocated.'
   },
-  Demographics: {
+  Enrolled: {
     type: REPORT_NODE,
-    description: 'The number of students that are enrolled'
+    description: 'The number of students that are enrolled.'
   },
   Faculty: {
-    parents: ['Convocation','Demographics'],
+    parents: ['Convocated','Enrolled'],
     collectedValues: ['STEM', 'Non-STEM', 'Engineering & Design', 'Science', 'Public Affairs', 'Business', 'Arts & Social Sciences'],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
     description: 'Department and faculty are mapped from student degree and major or majors.'
   },
   'Academic Year': {
-    parents: ['Convocation','Demographics'],
+    parents: ['Convocated','Enrolled'],
     collectedValues: ['2013/14',
       '2014/15',
       '2015/16',
@@ -38,37 +38,37 @@ const initialNodes = {
       '2020/21',],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Academic Year is made up of three terms (Summer, Fall, Winter)'
+    description: 'Academic Year is made up of three terms (Summer, Fall, Winter).'
   },
   Degree: {
-    parents: ['Convocation','Demographics'],
+    parents: ['Convocated','Enrolled'],
     collectedValues: ['Bachelors',
       'Masters',
       'Ph.D.'],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Level of study of a student'
+    description: 'Level of study of a student.'
   },
  
   'Study Status': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
     collectedValues: ['Part-time',
       'Full-time',
       'Co-op'],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'A full-time student is enrolled in 3 or more credits across the Fall and Winter terms whereas a part-time student is enrolled in less'
+    description: 'A full-time student is enrolled in 3 or more credits across the Fall and Winter terms whereas a part-time student is enrolled in less.'
   },
   'Citizenship Status': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
     collectedValues: ['Domestic',
       'International'],
   	uncollectedValues: [],
     type: EDI_ATTRIBUTE_NODE,
-    description: 'Students are categorized based on whether they are charged domestic or international fees'
+    description: 'Students are categorized based on whether they are charged domestic or international fees.'
   },
   Age: {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
     collectedValues: [
       '<=17',
       '18-20',
@@ -81,98 +81,101 @@ const initialNodes = {
     ],
     uncollectedValues: ['55-59','60-64','65-69', '70-74', '75-79', '80+'],
     type: EDI_ATTRIBUTE_NODE,
-    description: 'The age ranges of students'
+    description: 'The age ranges of students.'
   },
   Sex: {
-    parents: ['Convocation','Demographics'],
-    collectedValues: ['Male', 'Female'],
+    parents: ['Convocated','Enrolled'],
+    collectedValues: ['Female', 'Male'],
   	uncollectedValues: ['Non-binary'],
     type: EDI_ATTRIBUTE_NODE,
-    description: 'Mislabeled. The correct label should be \'Gender\' and all genders should be collected'
+    description: 'This is mislabeled by the university. The correct label should be \'Gender\' and all genders should be collected.'
 	},
   Race: {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The race of a student'
+    description: 'University does not collect the race of a student.'
 	},
   'Religion/Spirituality': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The religion/spirituality of a student'
+    description: 'University does not collect the religion/spirituality of a student.'
   },
-  'Geographic Identity': {
-    parents: ['Demographics'],
+  'Regional Identity': {
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The geographic identity of a student'
+    description: 'University does not collect the regional identity of a student.'
   },
   'Dis/ability': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The dis/ability of a student'
+    description: 'University does not collect the dis/ability of a student.'
   },
-  Indigenuity: {
-    parents: ['Demographics'],
+  Indigeneity: {
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: ['First Nations', 'Metis', 'Inuit'],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The indigenuity of a student'
+    description: 'University does not collect the indigeneity of a student.'
   },
   'First Language': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The first language of a student'
+    description: 'University does not collect the first language of a student.'
   },
   'Other Language': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The other language of a student'
+    description: 'University does not collect the other language of a student.'
   },
   'Ethnicity': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The ethnicity of a student'
+    description: 'University does not collect the ethnicity of a student.'
   },
   'Nation': {
-    parents: ['Demographics'],
+    parents: ['Enrolled'],
   	collectedValues: [],
   	uncollectedValues: [],
     type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'The nation of origin of a student'
+    description: 'University does not collect the nation of origin of a student.'
   },
 }
 
-
-
-const colors = {
+export const colors = {
   Transparent: {"red":255,"green":255,"blue":255,"alpha":0},
   White: {"red":255,"green":255,"blue":255,"alpha":1},
-  Grey: {"red":128,"green":128,"blue":128,"alpha":1},
-	Green: {"red":0,"green":255,"blue":0,"alpha":1},
   Blue: {"red":0,"green":0,"blue":255,"alpha":1},
-  Black: {"red":0,"green":0,"blue":0,"alpha":1}
+  Black: {"red":0,"green":0,"blue":0,"alpha":1},
+  Grey: {"red":141,"green":160,"blue":203,"alpha":1},
+	Green: {"red":102,"green":194,"blue":165,"alpha":1},
+  Orange: {"red":252,"green":141,"blue":98,"alpha": 1},
+  Slate_Grey : {"red":61,"green":72,"blue":73,"alpha":1},
+  Button: {"red":100,"green":100,"blue":100,"alpha":1},
+  Disabled: {"red":100,"green":100,"blue":100,"alpha":0.2},
+  Disabled_Text: {"red":255,"green":255,"blue":255,"alpha":0.2},
 }
 
 const sizes = {
-	Large: {width: 342, height: 146},
-  Medium: {width: 331, height: 146},
-	Small: {width: 310, height: 146}
+	Large: {width: 270, height: 70},
+  Medium: {width: 280, height: 70},
+	Small: {width: 330, height: 70}
 }
 
-const borderWidth = 2
+const borderWidth = 5
 const borderRadius = 5
 const connectorLineWidth = 5
 
@@ -191,7 +194,8 @@ const nodeDimensions = {
   	width: sizes.Large.width,
     height: sizes.Large.height,
     borderColor: colors.Black,
-    backgroundColor: colors.White,
+    backgroundColor: colors.Black,
+    textColor: colors.White,
     connectorLineColor: colors.Transparent,
     expandable: true,
     clickable: true
@@ -199,8 +203,9 @@ const nodeDimensions = {
   [UNCOLLECTED_ATTRIBUTE_NODE] : {
     width: sizes.Medium.width,
     height: sizes.Medium.height,
-    borderColor: colors.Green,
+    borderColor: colors.Black,
     backgroundColor: colors.Grey,
+    textColor: colors.White,
     connectorLineColor: colors.Transparent,
     expandable: true,
     clickable: false
@@ -208,8 +213,9 @@ const nodeDimensions = {
   [ACADEMIC_ATTRIBUTE_NODE]: {
     width: sizes.Medium.width,
     height: sizes.Medium.height,
-    borderColor: colors.Blue,
-    backgroundColor: colors.White,
+    borderColor: colors.Black,
+    backgroundColor: colors.Orange,
+    textColor: colors.White,
     connectorLineColor: colors.Black,
     expandable: true,
     clickable: true
@@ -217,8 +223,9 @@ const nodeDimensions = {
   [EDI_ATTRIBUTE_NODE]: {
     width: sizes.Medium.width,
     height: sizes.Medium.height,
-    borderColor: colors.Green,
-    backgroundColor: colors.White,
+    backgroundColor: colors.Green,
+    borderColor: colors.Black,
+    textColor: colors.White,
     connectorLineColor: colors.Black,
     expandable: true,
     clickable: true
@@ -226,6 +233,8 @@ const nodeDimensions = {
   [VALUE_NODE]: {
   	width: sizes.Small.width,
     height: sizes.Small.height,
+    borderColor: colors.Black,
+    textColor: colors.White,
     backgroundColor: colors.White,
     expandable: false,
     clickable: true
@@ -233,7 +242,9 @@ const nodeDimensions = {
   [UNCOLLECTED_VALUE_NODE]: {
   	width: sizes.Small.width,
     height: sizes.Small.height,
+    borderColor: colors.Black,
     backgroundColor: colors.Grey,
+    textColor: colors.White,
 		connectorLineColor: colors.Grey,
     expandable: false,
     clickable: false
@@ -252,7 +263,8 @@ const makeNode = (nodeId, parentNodeIds, nodeType, parentNodeType) => {
     	node.description = "" || initialNodes[nodeId].description;
   
   if (nodeType == VALUE_NODE){
-  	node.borderColor = nodeDimensions[parentNodeType].borderColor; 
+    node.backgroundColor = nodeDimensions[parentNodeType].backgroundColor; 
+  	//node.borderColor = nodeDimensions[parentNodeType].borderColor; 
     node.connectorLineColor = nodeDimensions[parentNodeType].borderColor; 
     if (nodeId === 'STEM'){
     	node.description = 'Aggregation of faculty of Science, Engineering & Design and Mathematics'

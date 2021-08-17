@@ -1,3 +1,5 @@
+import { colors } from './nodes';
+
 export class Sunburst {
   constructor() {
     //Exposed variables
@@ -36,6 +38,10 @@ export class Sunburst {
       centerTextHeight: 60,
       compareMode: false,
       legendWidth: 150,
+      backgroundColor: this.rgbaObjToColor(colors.Slate_Grey),
+      placeholderInnerText1: 'Category',
+      placeholderInnerText2: '# of Students',
+      placeholderInnerText3: '% in Group',
     };
 
     //get attributes method
@@ -60,6 +66,10 @@ export class Sunburst {
     this.getChartState().svg.selectAll('*').remove();
   }
 
+  rgbaObjToColor({ red, green, blue, alpha }) {
+    return `rgba(${red},${green},${blue},${alpha})`;
+  }
+  
   /* Converts objects to slices with queries */
   getValues(academicValues, diversityValues) {
     let attrs = this.getChartState();
@@ -191,8 +201,9 @@ export class Sunburst {
     }, {});
 
     // create container
-    let svg = d3.select(attrs.container);
-
+    let svg = d3.select(attrs.container)
+								.style('background-color', attrs.backgroundColor);
+    
     // setting up compare button
     const toggleCompare = () => {
       attrs.compareMode = !attrs.compareMode;
@@ -239,18 +250,22 @@ export class Sunburst {
     this.removeAll();
 
     // re-create the new elements
-    if (!attrs.compareMode) {
-      document.getElementById(
-        'compare-button'
-      ).style.backgroundColor = 'white';
-      this.renderSunburst(values);
+    if (!attrs.compareMode) { 
+      
       // disable compare mode if only 1 slice
-      document.getElementById('compare-button').disabled =
-        Object.keys(values).length === 1;
+      if (Object.keys(values).length === 1){
+        document.getElementById('compare-button').disabled = true;
+        document.getElementById('compare-button').style.backgroundColor =this.rgbaObjToColor(colors.Disabled);
+        document.getElementById('compare-button').style.color =this.rgbaObjToColor(colors.Disabled_Text);
+      } else{
+        document.getElementById('compare-button').disabled = false;
+        document.getElementById('compare-button').style.backgroundColor = this.rgbaObjToColor(colors.Button);
+				document.getElementById('compare-button').style.color ='white';
+      }
+      
+      this.renderSunburst(values);
     } else {
-      document.getElementById(
-        'compare-button'
-      ).style.backgroundColor = 'red';
+      document.getElementById('compare-button').style.backgroundColor = 'red';
       this.renderCompare(values);
     }
     this.renderLegend(values);
@@ -318,7 +333,7 @@ export class Sunburst {
       .attr('dy', '-0.5em')
       .style('text-anchor', 'middle')
       .style('font-size', innerTextSize)
-      .text('Category')
+      .text( attrs.placeholderInnerText1)
       .attr('opacity', '.5');
 
     let textCircle2 = centerGroup
@@ -328,7 +343,7 @@ export class Sunburst {
       .attr('dy', '0.5em')
       .style('text-anchor', 'middle')
       .style('font-size', innerTextSize)
-      .text('Count')
+      .text( attrs.placeholderInnerText2)
       .attr('opacity', '.5');
 
     let textCircle3 = centerGroup
@@ -338,7 +353,7 @@ export class Sunburst {
       .attr('dy', '1.5em')
       .style('text-anchor', 'middle')
       .style('font-size', innerTextSize)
-      .text('Percent')
+      .text(attrs.placeholderInnerText3)
       .attr('opacity', '.5');
 
     let sunburstGroup = svg
@@ -413,6 +428,7 @@ export class Sunburst {
         .attr('x', x)
         .attr('y', y)
         .style('font-size', attrs.outerTextSize)
+      	.style('fill', 'white')
         .text(text);
     };
 
@@ -483,10 +499,10 @@ export class Sunburst {
             .attr('opacity', '1');
 
           textCircle1
-            .text('Category')
+            .text(attrs.placeholderInnerText1)
             .attr('opacity', '.5');
-          textCircle2.text('Count').attr('opacity', '.5');
-          textCircle3.text('Percent').attr('opacity', '.5');
+          textCircle2.text(attrs.placeholderInnerText2).attr('opacity', '.5');
+          textCircle3.text(attrs.placeholderInnerText3).attr('opacity', '.5');
           d3.select("[id='" + value + "rect']").style(
             'stroke-width',
             1
@@ -766,6 +782,7 @@ export class Sunburst {
         .attr('y', y)
         .style('text-anchor', 'middle')
         .style('font-size', outerTextSize + 'px')
+      	.style('fill', 'white')
         .text(text);
     };
 
@@ -994,12 +1011,31 @@ export class Sunburst {
       .select('#sunburst-legend')
       .attr('width', attrs.legendWidth);
     legend.selectAll('*').remove();
-    let y = 24;
+    
     let x = 20;
-
+    let y = 10;
+    legend.append('text')
+          .attr('x', x + 20)
+          .attr('y', y + 6)
+          .text('LEGEND')
+          .style('font-size', '20px')
+    			.style('fill', 'white')
+          .attr('alignment-baseline', 'middle');
+    
+     y += 20;
+    
     let firstSlice = Object.values(values)[0];
     for (const attr in firstSlice) {
       const array = Object.keys(firstSlice[attr]);
+      legend
+        .append('text')
+        .attr('x', x)
+        .attr('y', y + 6)
+        .text(attr)
+        .style('font-size', '15px')
+        .style('fill', 'white')
+        .attr('alignment-baseline', 'middle');
+			 y += 20;
       for (const value of array) {
         if (value === 'Total') continue;
         legend
@@ -1018,11 +1054,13 @@ export class Sunburst {
           .attr('x', x + 20)
           .attr('y', y + 6)
           .text(value)
-          .style('font-size', '15px')
+          .style('font-size', '14px')
+        	.style('fill', 'white')
           .attr('alignment-baseline', 'middle');
-        y += 30;
+        y += 20;
       }
       y += 10;
+    
     }
   }
 }

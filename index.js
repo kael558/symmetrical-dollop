@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
   displayNodes();
   document.getElementById('visualize-button').onclick = displayViz;
 	document.getElementById('back-button').onclick = displayNodes;
- 	
+ 	document.getElementById('info-open-button').onclick = displayInfo;
+  document.getElementById('info-div').onclick = hideInfo;
+  document.getElementById('info-close-button').onclick = hideInfo;
   
   function displayNodes(){
     	document.getElementById('node-div').style.display = 'block';
@@ -53,6 +55,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
       } else {
          alert('Please wait for the data to finish loading');
       }
+  }
+  
+  function displayInfo(){
+    document.getElementById('info-div').style.display = 'block';
+  }
+  
+  function hideInfo(){
+     document.getElementById('info-div').style.display = 'none';
   }
   
   let ht = new Chart()

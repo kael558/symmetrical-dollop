@@ -1,4 +1,4 @@
-import { nodes } from './nodes';
+import { nodes, colors } from './nodes';
 
 export class Chart {
   constructor() {
@@ -15,7 +15,7 @@ export class Chart {
       defaultTextFill: '#2C3E50',
       nodeTextFill: 'white',
       defaultFont: 'Helvetica',
-      backgroundColor: 'transparent',
+      backgroundColor: this.rgbaObjToColor(colors.Slate_Grey),
       data: nodes,
       nodes: null,
       connectorLevels: 2,
@@ -36,6 +36,9 @@ export class Chart {
       },
       onNodeClick: null,
       tooltipDiv: null,
+      numExpanded: 0,
+      unclickedWidth: 5,
+      clickedWidth: 15,
     };
 
     this.getChartState = () => attrs;
@@ -52,54 +55,9 @@ export class Chart {
         return this;
       };
     });
+    
 
-    //hierarchial tree legend
-    let svg = d3.select('#node-legend');
-    svg
-      .append('rect')
-      .attr('x', 20)
-      .attr('y', 24)
-      .attr('width', 12)
-      .attr('height', 12)
-      .style('fill', 'grey');
-    svg
-      .append('rect')
-      .attr('x', 20)
-      .attr('y', 54)
-      .attr('width', 12)
-      .attr('height', 12)
-      .style('fill', 'none')
-      .style('stroke', 'green');
-    svg
-      .append('rect')
-      .attr('x', 20)
-      .attr('y', 84)
-      .attr('width', 12)
-      .attr('height', 12)
-      .style('fill', 'none')
-      .style('stroke', 'blue');
-    svg
-      .append('text')
-      .attr('x', 40)
-      .attr('y', 30)
-      .text('Uncollected')
-      .style('font-size', '15px')
-      .attr('alignment-baseline', 'middle');
-    svg
-      .append('text')
-      .attr('x', 40)
-      .attr('y', 60)
-      .text('Diversity')
-      .style('font-size', '15px')
-      .attr('alignment-baseline', 'middle');
-    svg
-      .append('text')
-      .attr('x', 40)
-      .attr('y', 90)
-      .text('Academic')
-      .style('font-size', '15px')
-      .attr('alignment-baseline', 'middle');
-
+		this.renderLegend();
     this.initializeEnterExitUpdatePattern();
   }
 
@@ -131,6 +89,42 @@ export class Chart {
     };
   }
 
+  renderLegend(){
+    //hierarchial tree legend
+    const legend = d3.select('#node-legend');
+    const width = 12, height = 12;
+    const rectBuilder = (x, y, color) => {
+    	  legend 
+          .append('rect')
+          .attr('x', x)
+          .attr('y', y)
+          .attr('width', width)
+          .attr('height', height)
+          .style('fill', this.rgbaObjToColor(color))
+      		.style('stroke', 'black');
+    }
+    
+    const textBuilder = (x, y, text, size) => {
+          legend
+            .append('text')
+            .attr('x', x)
+            .attr('y', y)
+            .text(text)
+            .style('font-size', size)
+      			.style('fill', 'white')
+            .attr('alignment-baseline', 'middle');
+    }
+    
+    textBuilder(60, 10, 'LEGEND', '20px');
+    rectBuilder(20, 34, colors.Grey);
+    rectBuilder(20, 64, colors.Green);
+    rectBuilder(20, 94, colors.Orange);
+    textBuilder(40, 40, 'Uncollected Attributes', '15px');
+    textBuilder(40, 70, 'Diversity Attributes', '15px');
+ 		textBuilder(40, 100, 'Academic Attributes', '15px');
+  }
+  
+  
   // This method retrieves passed node's children ID's (including node)
   getNodeChildrenIds(
     { data, children, _children },
@@ -188,8 +182,6 @@ export class Chart {
     if (containerRect.width > 0)
       attrs.svgWidth = containerRect.width;
 
-    //Attach drop shadow id to attrs object
-    this.setDropShadowId(attrs);
 
     //Calculated properties
     const calc = {
@@ -201,7 +193,7 @@ export class Chart {
     };
     calc.id = `ID${Math.floor(Math.random() * 1000000)}`; // id for event handlings
     calc.chartLeftMargin = attrs.marginLeft;
-    calc.chartTopMargin = attrs.marginTop;
+    calc.chartTopMargin = attrs.marginTop + 50;
     calc.chartWidth =
       attrs.svgWidth -
       attrs.marginRight -
@@ -224,7 +216,7 @@ export class Chart {
 
     // Calculate max node depth (it's needed for layout heights calculation)
     attrs.depth = calc.nodeMaxHeight + 100;
-    calc.centerX = calc.chartWidth / 2;
+    calc.centerX = calc.chartWidth / 2 - 80;
 
     //********************  LAYOUTS  ***********************
     const layouts = {
@@ -235,12 +227,25 @@ export class Chart {
     // Generate tree layout function
     layouts.treemap = d3
       .tree()
+      .separation(function(a, b) { 
+      
+      	if (a.parent.id === b.parent.id){
+          if (a.data.width === 280){ //attribute
+          	return 0.9; 
+          } 
+        } else {
+        	return 1.2; 
+        }
+      	return 1;
+    	})
       .size([calc.chartWidth, calc.chartHeight])
       .nodeSize([
-        calc.nodeMaxWidth + 100,
+        calc.nodeMaxWidth+10,
         calc.nodeMaxHeight + attrs.depth,
       ]);
 
+
+    
     // ******************* BEHAVIORS . **********************
     const behaviors = {
       zoom: null,
@@ -321,67 +326,50 @@ export class Chart {
 
     attrs.chart = chart;
 
+
+    //Define title
+    d3.select('#node-div').append('text')
+    			.attr('class', 'title')
+    			.text('Visualizing Carleton University Students Collected \& Missing Demographics Data');
     
     //Define div for tooltip
-    attrs.tooltipDiv = d3
-      .select('body')
+    attrs.tooltipDiv = d3.select('#node-div')
       .append('div')
       .attr('class', 'tooltip')
       .style('opacity', 0);
     
-    // ************************** ROUNDED AND SHADOW IMAGE  WORK USING SVG FILTERS **********************
-
-    //Adding defs element for rounded image
-    attrs.defs = svg.patternify({
-      tag: 'defs',
-      selector: 'image-defs',
-    });
-
-    // Adding defs element for image's shadow
-    const filterDefs = svg.patternify({
-      tag: 'defs',
-      selector: 'filter-defs',
-    });
-
     // Display tree contenrs
     this.update(attrs.root);
 
     return this;
   }
 
-  // This function sets drop shadow ID to the passed object
-  setDropShadowId(d) {
-    // If it's already set, then return
-    if (d.dropShadowId) return;
 
-    // Generate drop shadow ID
-    let id = `${d.id}-drop-shadow`;
-
-    // If DOM object is available, then use UID method to generated shadow id
-    //@ts-ignore
-    if (typeof DOM != 'undefined') {
-      //@ts-ignore
-      id = DOM.uid(d.id).id;
-    }
-
-    // Extend passed object with drop shadow ID
-    Object.assign(d, {
-      dropShadowId: id,
-    });
-  }
 
   // This function basically redraws visible graph, based on nodes state
   update({ x0, y0, x, y }) {
     const attrs = this.getChartState();
     const calc = attrs.calc;
-
+	
     //  Assigns the x and y position for the nodes
     const treeData = attrs.layouts.treemap(attrs.root);
+
+    const isNotAttributeNode = (id) => (id === 'Root' || id === 'Convocated' || id === 'Enrolled')
+    
+    let expanded = 0;
+    for (const index in attrs.nodes){
+      const node = attrs.nodes[index];
+      if (isNotAttributeNode(node.id))
+        continue;
+      if (node.children)
+        expanded++;
+
+    }
+    
 
     // Get tree nodes and links and attach some properties
     const nodes = treeData.descendants().map((d) => {
       // If at least one property is already set, then we don't want to reset other properties
-      if (d.width) return d;
 
       // Declare properties with deffault values
       let borderColor = 'steelblue';
@@ -390,6 +378,15 @@ export class Chart {
       let width = d.data.width;
       let height = d.data.height;
 			let description = '' || d.data.description;
+
+    	let depth = d.depth;
+
+      if (expanded > 1 && attrs.numExpanded < expanded && depth > 2){
+        console.log("increase");
+        depth +=1;
+      }
+      
+   		
       
       if (d.data.borderColor) {
         borderColor = this.rgbaObjToColor(
@@ -413,8 +410,13 @@ export class Chart {
         width,
         height,
         description,
+        depth,
       });
     });
+    
+    // Save num expanded
+    attrs.numExpanded = expanded;
+    
 
     // Save nodes for click
     attrs.nodes = nodes;
@@ -422,52 +424,39 @@ export class Chart {
     // Get all links
     const links = treeData.descendants().slice(1);
 
-    // Set constant depth for each nodes
-    nodes.forEach((d) => (d.y = d.depth * attrs.depth));
+    // Set constant depth for each node
+
+    nodes.forEach((d) => {
+      			d.y = d.depth * attrs.depth; 
+            //console.log(d.y + " " + d.depth);
+    });
 
     // --------------------------  LINKS ----------------------
     // Get links selection
     const linkSelection = attrs.centerG
       .selectAll('path.link')
       .data(links, ({ id }) => id);
-
-    // Enter any new links at the parent's previous position.
+    
+     
     const linkEnter = linkSelection
       .enter()
       .insert('path', 'g')
       .attr('class', 'link')
       .attr('d', (d) => {
         const o = {
-          x: x0,
-          y: y0,
+          x: d.x,
+          y: d.y,
         };
-        return this.diagonal(o, [o]);
+        return this.diagonal(o, [o, o]);
       });
-
-    // Get links update selection
-    const linkUpdate = linkEnter.merge(linkSelection);
-
-    // Styling links
-    linkUpdate
+    
+		const linkUpdate = linkEnter.merge(linkSelection);
+    
+     linkUpdate
       .attr('fill', 'none')
-      .attr(
-        'stroke-width',
-        ({ data }) => data.connectorLineWidth || 2
-      )
-      .attr('stroke', ({ data }) => {
-        if (data.connectorLineColor) {
-          return this.rgbaObjToColor(
-            data.connectorLineColor
-          );
-        }
-        return 'green';
-      })
-      .attr('stroke-dasharray', ({ data }) => {
-        if (data.dashArray) {
-          return data.dashArray;
-        }
-        return '';
-      });
+      .attr('stroke-width',({ data }) => data.connectorLineWidth || 2)
+      .attr('stroke', ({ data }) => data.connectorLineColor ? this.rgbaObjToColor(data.connectorLineColor) : 'green')
+      .attr('stroke-dasharray', ({ data }) =>  data.dataArray || '');
 
     // Transition back to the parent element position
     linkUpdate
@@ -488,14 +477,14 @@ export class Chart {
       .duration(attrs.duration)
       .attr('d', (d) => {
         const o = {
-          x: x ? x : 0,
-          y: y ? y : 0,
+          x: d.parent.x || 0,
+          y: d.parent.y || 0,
         };
         let diag = this.diagonal(o, [o]);
         return diag;
       })
       .remove();
-
+    
     // --------------------------  NODES ----------------------
 
 
@@ -514,8 +503,7 @@ export class Chart {
       .attr('cursor', 'pointer')
       .on('click', ({ data }) => { 
         if (data.clickable) {
-          if (
-            attrs.diversityValues[data.parentNodeIds[0]]
+          if (attrs.diversityValues[data.parentNodeIds[0]]
           ) {
             const index = attrs.diversityValues[
               data.parentNodeIds[0]
@@ -524,12 +512,12 @@ export class Chart {
               attrs.diversityValues[
                 data.parentNodeIds[0]
               ].splice(index, 1);
-              data.borderWidth = 2;
+              data.borderWidth = attrs.unclickedWidth;
             } else {
               attrs.diversityValues[
                 data.parentNodeIds[0]
               ].push(data.nodeId);
-              data.borderWidth = 10;
+              data.borderWidth = attrs.clickedWidth;
             }
           } else if (
             attrs.academicValues[data.parentNodeIds[0]]
@@ -541,7 +529,7 @@ export class Chart {
               attrs.academicValues[
                 data.parentNodeIds[0]
               ].splice(index, 1);
-              data.borderWidth = 2;
+              data.borderWidth = attrs.unclickedWidth;
               if (
                 attrs.academicValues[data.parentNodeIds[0]]
                   .length == 0
@@ -575,13 +563,13 @@ export class Chart {
               }
               if (total > 15) {
                 alert(
-                  'WARNING: Adding more academic attributes may result in low visibility in the visualization or crashing'
+                  'WARNING: Adding more academic attributes may result in low visibility in the visualization.'
                 );
               }
             }
           } else {
             data.borderWidth =
-              data.borderWidth == 2 ? 10 : 2;
+              data.borderWidth == attrs.unclickedWidth ? attrs.clickedWidth : attrs.unclickedWidth;
           }
         }
 
@@ -591,23 +579,24 @@ export class Chart {
           );
           ht.onButtonClick(nodeClicked);
         }
-
         ht.update(data);
       })
       .on('mouseover', (d) => {
-       // console.log(d);
-        //console.log(d3.event);
-        if (d.description) {
+        if (d.description && (attrs.tooltipDiv.style('opacity') != 0.9 || d.description !== attrs.tooltipDiv._groups[0][0].innerHTML)) {
           attrs.tooltipDiv
             .transition()
-            .duration(200)
+            .duration(100)
             .style('opacity', 0.9);
           attrs.tooltipDiv
-            .html(d.description);
+            .html(d.description)
+          	.style("left", (d3.event.pageX - d.data.width/2) + "px")		
+            .style("top", (d3.event.pageY - 60) + "px");	              
         }
       })
-      .on('mouseout', () => {
-        attrs.tooltipDiv.transition().duration(500).style('opacity', 0);
+      .on('mouseout', (d) => {
+        if (d3.event.toElement.className.baseVal === 'svg-chart-container') {
+          attrs.tooltipDiv.transition().duration(500).style('opacity', 0);
+        }
       });
 
     // Add background rectangle for the nodes
@@ -626,22 +615,28 @@ export class Chart {
       .merge(nodesSelection)
       .style('font', '12px sans-serif');
 
-    // Add foreignObject element inside rectangle
-    const fo = nodeUpdate.patternify({
-      tag: 'foreignObject',
-      selector: 'node-foreign-object',
-      data: (d) => [d],
-    });
-
-    // Add foreign object
-    fo.patternify({
-      tag: 'xhtml:div',
+    // Add text element inside group
+    nodeUpdate.patternify({
+      tag: 'text',
       selector: 'node-foreign-object-div',
       data: (d) => [d],
     });
+    
+     // Add select all/deselect all button inside group
+    nodeUpdate.patternify({
+      tag: 'i',
+      selector: 'fa fa-check-square-o',
+      data: (d) => [d],
+    }).attr('click', d => this.onSelectAll(d));
+    
+    //Move select all icon to side
+    nodeUpdate.select('.fa-check-square-o')
+    						.style('aria-hidden', 'true')
+    						.style('color', 'white')
+               .style('font-size', '5px')
 
     this.restyleForeignObjectElements();
-
+    
     // Transition to the proper position for the node
     nodeUpdate
       .transition()
@@ -649,7 +644,7 @@ export class Chart {
       .duration(attrs.duration)
       .attr(
         'transform',
-        ({ x, y }) => `translate(${x},${y})`
+        ({ x, y }) => `translate(${x || 0},${y || 0})`
       )
       .attr('opacity', 1);
 
@@ -678,7 +673,7 @@ export class Chart {
       .attr('opacity', 1)
       .transition()
       .duration(attrs.duration)
-      .attr('transform', (d) => `translate(${x},${y})`)
+      .attr('transform', (d) => {console.log(d);`translate(${-300},${300})`})
       .on('end', function () {
         d3.select(this).remove();
       })
@@ -716,8 +711,8 @@ export class Chart {
     const group = this.getChartState()
       .centerG.append('g')
       .attr('id', 'groupOfPaths');
-    let heightMultiplier =
-      parents.length == 2 ? 0.575 : 0.425;
+    let heightMultiplier = parents.length == 2 ? 0.6 : 0.4;
+    
     for (const t of parents) {
       let height = s.y - t.y;
 
@@ -728,30 +723,16 @@ export class Chart {
       let ey = t.y;
       let xrvs = ex - x < 0 ? -1 : 1;
       let yrvs = -1;
-      let rdef = 35;
-      let rInitial =
-        Math.abs(ex - x) / 2 < rdef
-          ? Math.abs(ex - x) / 2
-          : rdef;
-      let r =
-        Math.abs(ey - y) / 2 < rInitial
-          ? Math.abs(ey - y) / 2
-          : rInitial;
+      let rdef = 0;
+      let rInitial = Math.abs(ex - x) / 2 < rdef ? Math.abs(ex - x) / 2 : rdef;
+      let r = Math.abs(ey - y) / 2 < rInitial ? Math.abs(ey - y) / 2 : rInitial;
       let h = Math.abs(ey - y) * heightMultiplier - r;
       let w = Math.abs(ex - x) - r * 2;
 
       let path = `
              M ${x} ${y}
              L ${x} ${y + h * yrvs}
-             C ${x} ${y + h * yrvs + r * yrvs} ${x} ${
-        y + h * yrvs + r * yrvs
-      } ${x + r * xrvs} ${y + h * yrvs + r * yrvs}
-             L ${x + w * xrvs + r * xrvs} ${
-        y + h * yrvs + r * yrvs
-      }
-             C ${ex} ${y + h * yrvs + r * yrvs} ${ex} ${
-        y + h * yrvs + r * yrvs
-      } ${ex} ${ey - h * yrvs}
+             L ${x + w * xrvs + r * xrvs} ${y + h * yrvs + r * yrvs}
              L ${ex} ${ey}
            `;
       group
@@ -772,13 +753,28 @@ export class Chart {
   restyleForeignObjectElements() {
     const attrs = this.getChartState();
 
+    /*
     attrs.svg
       .selectAll('.node-foreign-object')
       .attr('width', ({ width }) => width)
       .attr('height', ({ height }) => height)
       .attr('x', ({ width }) => -width / 2)
       .attr('y', ({ height }) => -height / 2);
-    attrs.svg
+      
+          <rect x="0" y="0" width="100" height="100" fill="red"></rect>
+    <text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>
+      */
+
+    
+     attrs.svg
+      .selectAll('.node-foreign-object-div')
+    	.attr('dy', '10px')
+      .style('text-anchor', 'middle')
+    	.style('fill', ({ textColor }) =>textColor || 'black')
+      .style('font-size', '30px')
+      .html(({ data }) => data.nodeId);
+    /*
+    attrs.svgtext-align: center;
       .selectAll('.node-foreign-object-div')
       .style('width', ({ width }) => `${width}px`)
       .style('height', ({ height }) => `${height}px`)
@@ -788,29 +784,40 @@ export class Chart {
       .style('text-align', 'center')
       .style('margin-top', '50px')
       .style('font-size', '40px')
-      .html(({ data }) => data.nodeId);
+      .html(({ data }) => data.nodeId);*/
   }
 
+   onSelectAll(d) {
+     
+   }
+  
   // Toggle children on click.
   onButtonClick(d) {
     // If childrens are expanded
     if (d.children) {
-      if (d.id === 'Convocation') {
+      if (d.id === 'Convocated') {
         const demographicNode = d.parent.children[1];
         if (demographicNode.children) {
           return;
         }
-      }
+      } 
+      
       //Collapse them
       d._children = d.children;
       d.children = null;
 
+      if (d.id === 'Enrolled'){  
+        const convocationNode = d.parent.children[0];
+        if (convocationNode.data.borderWidth === 2){
+          this.onButtonClick(convocationNode);
+        }
+      }
+      
       // Set descendants expanded property to false
       this.setExpansionFlagToChildren(d, false);
     } else {
-      if (d.id === 'Demographics') {
+      if (d.id === 'Enrolled') {
         const convocationNode = d.parent.children[0];
-
         if (convocationNode.children == null) {
           this.onButtonClick(convocationNode);
         }

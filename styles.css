@@ -6,7 +6,6 @@ body {
 
 .legend{
   position: fixed;
-  top: 50px;
   right: 0;
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
 }
@@ -25,46 +24,143 @@ body {
 }
 
 .tooltip{
+    position: absolute;			
+    text-align: center;			
+    width: 300px;					
+    height: 28px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;		
+}
+
+.node-foreign-object-div{
+ user-select: none; /* Standard */ 
+}
+
+.title{
+  position: absolute;
+  margin: auto;
+  width: 60%;
+  left: 10%;
+  text-align: center;
+  padding: 10px;
+  z-index: 500;
+  font: 25px sans-serif;
+  color: white;
+  -webkit-text-stroke: 1px black;
+}
+
+
+
+#info-open-button{
   position: fixed;
-  bottom: 10px;
+  font-size:36px;
+  color: white;
+  top: 10px;
   left: 10px;
+  width: 20px;
+  height: 20px;
+  z-index: 500;
+  cursor: pointer;
+}
+
+#node-legend{
+   top: 60px;
 }
 
 #sunburst-legend{
-  top: 100px;
+  top: 60px;
   
 }
 
 
+#info-div{
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 1000; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */ 
+}
+
+#info-text{
+  position: fixed; 
+  color: white;
+  top: 20%;
+  left: 15%;
+  max-width: 70%;
+  background-color: #708090; /* Black background with opacity */
+  z-index: 1000;
+  text-align: center;
+  padding: 10px;
+  font: 15px sans-serif;
+  border-radius: 20px;
+  box-shadow: 2px 3px black;
+}
+
+#info-close-button{
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1001;
+  color: white;
+}
+
+.fa-check-square-o{
+  z-index: 600;
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: white;
+}
+
 #visualize-button {
 	position: absolute;
-  background: rgba(100,100,100,0);
+ 
   top:0px;
-  right:10px;
-  width: 130px;
+  right:0px;
+  width: 190px;
   height: 50px;
   border-radius: 10px;
   z-index: 500;
+  background: rgba(100,100,100,1);
+  box-shadow: 2px 3px black;
+  font: 20px sans-serif;
+  color: white;
 }
 
 #back-button {
 	position: absolute;
-  background: rgba(100,100,100,0);
   top:0px;
-  right:10px;
+  left:0px;
   width: 130px;
   height: 50px;
   border-radius: 10px;
   z-index: 500;
+  background: rgba(100,100,100,1);
+  box-shadow: 2px 3px black;
+  font: 20px sans-serif;
+  color: white;
 }
 
 #compare-button {
   position: absolute;
-  background: rgba(100,100,100,0);
-  top:50px;
-  right:10px;
-  width: 130px;
+  top:0px;
+  right:0px;
+  width: 150px;
   height: 50px;
   border-radius: 10px;
   z-index: 500;
+  background: rgba(100,100,100,1);
+  box-shadow: 2px 3px black;
+  font: 20px sans-serif;
+  color: white;
 }
