@@ -1,4 +1,4 @@
-const ROOT_NODE = 'ROOT';
+const INVISIBLE_NODE = 'INVISIBLE';
 const REPORT_NODE = 'REPORT';
 
 const EDI_ATTRIBUTE_NODE = 'EDI_ATTRIBUTE';
@@ -155,7 +155,12 @@ const initialNodes = {
   },
 }
 
+
 export const colors = {
+  Report_Node_Fill: {"red":31,"green":120,"blue":180,"alpha":1},
+  Diversity_Node_Fill: {"red":51,"green":160,"blue":44,"alpha":1},
+  Academic_Node_Fill: {"red":166,"green":206,"blue":227,"alpha":1},
+  Uncollected_Node_Fill: {"red":178,"green":223,"blue":138,"alpha":1},
   Transparent: {"red":255,"green":255,"blue":255,"alpha":0},
   White: {"red":255,"green":255,"blue":255,"alpha":1},
   Blue: {"red":0,"green":0,"blue":255,"alpha":1},
@@ -180,13 +185,13 @@ const borderRadius = 5
 const connectorLineWidth = 5
 
 const nodeDimensions = {
-  [ROOT_NODE] : {
+  [INVISIBLE_NODE] : {
     width: sizes.Large.width,
     height: sizes.Large.height,
     borderColor: colors.Transparent,
     backgroundColor: colors.Transparent,
     textColor: colors.Transparent,
-    connectorLineColor: colors.Transparent,
+    connectorLineColor: colors.Black,
     expandable: false,
     clickable: false
   },
@@ -194,7 +199,7 @@ const nodeDimensions = {
   	width: sizes.Large.width,
     height: sizes.Large.height,
     borderColor: colors.Black,
-    backgroundColor: colors.Black,
+    backgroundColor: colors.Report_Node_Fill,
     textColor: colors.White,
     connectorLineColor: colors.Transparent,
     expandable: true,
@@ -204,7 +209,7 @@ const nodeDimensions = {
     width: sizes.Medium.width,
     height: sizes.Medium.height,
     borderColor: colors.Black,
-    backgroundColor: colors.Grey,
+    backgroundColor: colors.Uncollected_Node_Fill,
     textColor: colors.White,
     connectorLineColor: colors.Transparent,
     expandable: true,
@@ -214,7 +219,7 @@ const nodeDimensions = {
     width: sizes.Medium.width,
     height: sizes.Medium.height,
     borderColor: colors.Black,
-    backgroundColor: colors.Orange,
+    backgroundColor: colors.Academic_Node_Fill,
     textColor: colors.White,
     connectorLineColor: colors.Black,
     expandable: true,
@@ -223,7 +228,7 @@ const nodeDimensions = {
   [EDI_ATTRIBUTE_NODE]: {
     width: sizes.Medium.width,
     height: sizes.Medium.height,
-    backgroundColor: colors.Green,
+    backgroundColor: colors.Diversity_Node_Fill,
     borderColor: colors.Black,
     textColor: colors.White,
     connectorLineColor: colors.Black,
@@ -243,7 +248,7 @@ const nodeDimensions = {
   	width: sizes.Small.width,
     height: sizes.Small.height,
     borderColor: colors.Black,
-    backgroundColor: colors.Grey,
+    backgroundColor: colors.Uncollected_Node_Fill,
     textColor: colors.White,
 		connectorLineColor: colors.Grey,
     expandable: false,
@@ -285,6 +290,8 @@ const populateNodes = (nodes, initialNodes) => {
     		nodes.push(makeNode(key, ['Root'], REPORT_NODE));
     } else {
         nodes.push(makeNode(key, node.parents, node.type)); //link to first parent
+      	//let invisibleID = 'invisible'+key;
+      	//nodes.push(makeNode(invisibleID, [key], INVISIBLE_NODE, node.type));
         for (const link of node.collectedValues)
           nodes.push(makeNode(link, [key], VALUE_NODE, node.type));
         for (const link of node.uncollectedValues)
@@ -293,7 +300,7 @@ const populateNodes = (nodes, initialNodes) => {
 	}
 }
 
-export const nodes = [makeNode('Root', [null], ROOT_NODE)];
+export const nodes = [makeNode('Root', [null], INVISIBLE_NODE)];
 populateNodes(nodes, initialNodes);
 
 

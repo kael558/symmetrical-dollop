@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
          }
         
          if (!valid){
+           	console.log(diversityValues);
         		alert('Please select at least one diversity attribute');  
          } else {
            	 document.getElementById('node-div').style.display = 'none';

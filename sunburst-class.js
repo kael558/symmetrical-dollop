@@ -34,7 +34,7 @@ export class Sunburst {
       textCirclesCount: [],
       textCirclesPercent: [],
       centerText: null,
-      centerTextSize: '40px',
+      centerTextSize: '25px',
       centerTextHeight: 60,
       compareMode: false,
       legendWidth: 150,
@@ -74,6 +74,17 @@ export class Sunburst {
   getValues(academicValues, diversityValues) {
     let attrs = this.getChartState();
 
+    // Sorting age
+    let order = {'<=17': 0,
+        '18-20': 1,
+        '21-25': 2,
+        '26-30': 3,
+        '31-35': 4,
+        '36-45': 5,
+        '46-55': 6,
+        '55+' : 7};
+    diversityValues.Age.sort((e1, e2) => (order[e1] - order[e2]));
+ 
     //preparing slices
     const cartesian = (...a) =>
       a.reduce((a, b) =>
@@ -226,6 +237,53 @@ export class Sunburst {
       diversityValues
     );
 
+    
+    const titleBuilder = (academicValues, diversityValues) => {
+      let list = [];
+      
+      const getAttrAsTitle = (attr) => {
+         if (attr === 'Academic Year'){
+           	return ' 2013-2021';
+          } else if (attr === 'Degree'){
+           	  return ' all degrees';
+          } else if (attr === 'Faculty'){
+           	  return ' all faculties';
+          } else if (attr === 'Study Status'){
+           	  return ' all study statuses';
+          } else if (attr === 'Age'){
+           	  return ' all ages';
+          } else if (attr === 'Sex'){
+           	  return ' all sexes';
+          } else if (attr === 'Citizenship Status'){
+           	  return ' all citizenship statuses';
+          }
+      }
+
+      for (const attr in academicValues){
+      	if (academicValues[attr].length === 1 && academicValues[attr][0] === 'Total'){
+        	list.push(getAttrAsTitle(attr));
+        }
+      }
+      
+      for (const attr in diversityValues){
+      	if (diversityValues[attr].length === 0){
+        	list.push(getAttrAsTitle(attr));
+        }
+      }
+
+			return list.join();
+    };
+     
+    const width = d3
+      .select('#sunburst')
+      .node()
+      .getBoundingClientRect().width - attrs.legendWidth;
+    
+    let title = d3
+      .select('#title-text')
+      .style('font-size', attrs.centerTextSize)
+      .text(titleBuilder(academicValues, diversityValues));
+    
     this.render(values);
   }
 
@@ -237,6 +295,7 @@ export class Sunburst {
     // Setting values so values is still accessible when compare is toggled
     attrs.values = values;
 
+    
     // repurposing back button if necessary
     if (attrs.history.length > 0) {
       const back = () => sb.render(attrs.history.pop());
@@ -276,10 +335,10 @@ export class Sunburst {
     let attrs = this.getChartState();
     let sb = this;
 
+    
     //Helper values
     const numSlices = Object.keys(values).length;
-    const numArcs = Object.keys(Object.values(values)[0])
-      .length;
+    const numArcs = Object.keys(Object.values(values)[0]).length;
     const extendedLineLength = attrs.extendedLineLength;
     const halfSliceRadians = Math.PI / numSlices;
     const textDistance = attrs.textDistance;
@@ -292,7 +351,7 @@ export class Sunburst {
     const containerHeight = +container.height;
     const containerWidth = +container.width;
 
-    const height = containerHeight;
+    const height = containerHeight-attrs.centerTextHeight;
     const width = containerWidth - attrs.legendWidth;
 
     const params = this.computeSunburstParameters(
@@ -306,11 +365,11 @@ export class Sunburst {
 
     let svg = attrs.svg
       .append('g')
-      .attr('width', attrs.svgWidth)
-      .attr('height', attrs.svgHeight)
+      .attr('width', width)
+      .attr('height', height)
       .attr(
         'transform',
-        `translate(${width / 2},${height / 2})`
+        `translate(${width / 2},${height/ 2  + attrs.centerTextHeight})`
       );
 
     let centerGroup = svg
@@ -326,6 +385,10 @@ export class Sunburst {
       .style('stroke-width', 5)
       .attr('fill', 'white');
 
+   
+          
+          
+    
     let textCircle1 = centerGroup
       .append('text')
       .attr('x', 0)
@@ -411,9 +474,6 @@ export class Sunburst {
         (2 * Math.PI * sliceCount) / numSlices +
         halfSliceRadians;
       let text = getText(slice);
-      if (text === '') {
-        text = 'Total';
-      }
       let radius =
         innerRadius + numArcs * arcWidth + textDistance;
       let x = getCircleX(radians, radius);
@@ -547,6 +607,8 @@ export class Sunburst {
         });
     };
 
+    
+  
     //build arcs
     let sliceCount = 0;
     for (const slice in values) {
@@ -774,7 +836,7 @@ export class Sunburst {
       let outerTextSize = Math.min(
         (sizeMultiplier * (2 * radius)) /
           longestSliceTextLength,
-        50
+        30
       );
 
       sunburstGroup
