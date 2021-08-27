@@ -28,15 +28,18 @@ body {
     text-align: center;			
     width: 300px;								
     padding: 2px;				
-    font: 12px sans-serif;		
+    font: 14px sans-serif;		
     background: lightsteelblue;	
     border: 0px;		
     border-radius: 8px;			
     pointer-events: none;		
+  	border-style: solid;
+    border-width: 4px;
+    border-color: black;
 }
 
 .node-foreign-object-div{
- user-select: none; /* Standard */ 
+ 	user-select: none; /* Standard */ 
 }
 
 .title{
@@ -66,11 +69,11 @@ body {
 }
 
 #node-legend{
-   top: 60px;
+   top: 70px;
 }
 
 #sunburst-legend{
-  top: 60px;
+  top: 70px;
   
 }
 
@@ -99,7 +102,7 @@ body {
   z-index: 1000;
   text-align: center;
   padding: 10px;
-  font: 15px sans-serif;
+  font: 18px sans-serif;
   border-radius: 20px;
   box-shadow: 2px 3px black;
 }
@@ -176,7 +179,7 @@ body {
 
 #selected-attributes{
   position: fixed;
-  top: 185px;
+  top: 200px;
   right: 0;
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
 }

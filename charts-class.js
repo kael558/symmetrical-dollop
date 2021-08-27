@@ -39,6 +39,8 @@ export class Chart {
       numExpanded: 0,
       unclickedWidth: 5,
       clickedWidth: 15,
+      centerX: 0,
+      centerY: 0,
     };
 
     this.getChartState = () => attrs;
@@ -143,18 +145,19 @@ export class Chart {
     	}
        
       let y = 10;
-      textBuilder(40, y, 'ATTRIBUTES', '20px');
+    	let x = 50;
+      textBuilder(x-40, y, 'SELECTED CATEGORIES', '15px');
     	y+=30;
       for (const attr in attrs.academicValues){
       	if (attrs.academicValues[attr].length > 1 || (attrs.academicValues[attr].length === 1 && attrs.academicValues[attr][0] !== 'Total')){
-        	textBuilder(50, y, attr, '15px');
+        	textBuilder(x, y, '- ' + attr, '15px');
           y+=30;
         }
       }
       
       for (const attr in attrs.diversityValues){
       	if (attrs.diversityValues[attr].length > 0){
-         textBuilder(50, y, attr, '15px');
+         textBuilder(x, y, '- ' + attr, '15px');
           y+=30;
         }
       }
@@ -361,12 +364,13 @@ export class Chart {
       );
 
     attrs.chart = chart;
-
-
+		attrs.centerX = calc.centerX;
+		attrs.centerY = calc.nodeMaxHeight / 2;
+    
     //Define title
     d3.select('#node-div').append('text')
     			.attr('class', 'title')
-    			.text('Visualizing Carleton University Students Collected \& Missing Demographics Data');
+    			.text('Carleton University Students Collected \& Missing Demographics Data');
     
     //Define div for tooltip
     attrs.tooltipDiv = d3.select('#node-div')
@@ -393,7 +397,9 @@ export class Chart {
     //  Assigns the x and y position for the nodes
     const treeData = attrs.layouts.treemap(attrs.root);
 
-    const isAttributeNode = (node) => (node && node.parent && (node.parent.id === 'Convocated' || node.parent.id === 'Enrolled'))
+    const isAttributeNode = (node) => {
+      return node && node.parent && (node.parent.id === 'Convocated' || node.parent.id === 'Enrolled')
+    }
     
     let parentID = null;
     let count = 2;
@@ -545,10 +551,13 @@ export class Chart {
             .transition()
             .duration(100)
             .style('opacity', 0.9);
+          
+          let lines = d.description.length / 46 + 1;
+          
           attrs.tooltipDiv
             .html(d.description)
           	.style("left", (d3.event.pageX - d.data.width/2) + "px")		
-            .style("top", (d3.event.pageY - 60) + "px");	    
+            .style("top", (d3.event.pageY - 20*lines) + "px");	    
         }
       })
       .on('mouseout', (d) => {
@@ -580,15 +589,13 @@ export class Chart {
       data: (d) => [d],
     });
     
-    	nodeEnter
+    	nodeUpdate
             .patternify({
                 tag: 'circle',
                 selector: 'node-button-circle',
                 data: d => [d]
             })
             .on('click', d => this.onSelectAll(d) )
-    
-    
     
       nodeUpdate.select('.node-button-circle')
             .attr('transform', ({
@@ -606,8 +613,9 @@ export class Chart {
             }) => data.borderWidth || attrs.strokeWidth)
             .attr('fill', (d) => {
         			const clicked = (child) => child.data.borderWidth == attrs.clickedWidth || !child.data.clickable;
+
         			if (isAttributeNode(d)){
-               	return (d.children && d.children.every(clicked)) || (d._children && d._children.every(clicked)) ? this.rgbaObjToColor(colors.White) : attrs.backgroundColor; 
+                return (d.children && d.children.every(clicked)) || (d._children && d._children.every(clicked)) ? this.rgbaObjToColor(colors.White) : attrs.backgroundColor;
               } else {
                 return attrs.backgroundColor;
               }
@@ -625,10 +633,7 @@ export class Chart {
       .transition()
       .attr('opacity', 0)
       .duration(attrs.duration)
-      .attr(
-        'transform',
-        ({ x, y }) => `translate(${x || 0},${y || 0})`
-      )
+      .attr('transform',({x, y}) => `translate(${x},${y})`)
       .attr('opacity', 1);
 
     // Style node rectangles
@@ -656,7 +661,7 @@ export class Chart {
       .attr('opacity', 1)
       .transition()
       .duration(attrs.duration)
-      .attr('transform', (d) => {`translate(${-300},${300})`})
+      .attr('transform',({parent}) => `translate(${parent.x},${parent.y})`)
       .on('end', function () {
         d3.select(this).remove();
       })
@@ -748,18 +753,17 @@ export class Chart {
   }
 
    onSelectAll(d) {
-
-		const attrs = this.getChartState();
+		 const attrs = this.getChartState();
      const clicked = (child) => child.data.borderWidth == attrs.clickedWidth || !child.data.clickable;
      const allSelected = (d.children || d._children).every(clicked);
      
-     (d.children || d._children).forEach((d) => this.onButtonClick(d, !allSelected, allSelected, false));
-     this.onButtonClick(d, false, false, true);
+     (d.children || d._children).forEach((d) => this.onButtonClick(d, !allSelected, allSelected, false, false));
+     this.onButtonClick(d, true, false, true);
    }
   
   
   // Toggle children on click.
-  onButtonClick(d, selectOption, compressOption, updateOption) {
+  onButtonClick(d, selectOption, compressOption, updateOption, warningOption) {
     const defaultToTrue = (bool) => typeof bool === 'undefined' ? true : bool;
 
     const compress = defaultToTrue(compressOption); //defaults to true
@@ -770,6 +774,8 @@ export class Chart {
     
     const update = defaultToTrue(updateOption);
     
+    const warning = defaultToTrue(warningOption);
+   
     const attrs = this.getChartState();
     const data = d.data;
     if (data.clickable) {
@@ -809,19 +815,21 @@ export class Chart {
               attrs.academicValues[parent].push(data.nodeId);
               data.borderWidth = attrs.clickedWidth;
 
-              let total = 1;
-              for (const attr in attrs.academicValues) {
-                total *= attrs.academicValues[attr].length;
-              }
-              if (total > 15) {
-                alert(
-                  'WARNING: Adding more academic attributes may result in low visibility in the visualization.'
-                );
+              if (warning){
+                 let total = 1;
+                  for (const attr in attrs.academicValues) {
+                    total *= attrs.academicValues[attr].length;
+                  }
+                  if (total > 15) {
+                    alert(
+                      'WARNING: Adding more academic attributes may result in low visibility in the visualization.'
+                    );
+                  }
               }
             }
           }
       } else {
-        if (data.borderWidth === attrs.unclickedWidth){ //unclicked
+        if (data.borderWidth === attrs.unclickedWidth && select){ //unclicked
           data.borderWidth = attrs.clickedWidth;
         } else if (compress){
            data.borderWidth = attrs.unclickedWidth;
@@ -832,9 +840,10 @@ export class Chart {
     // If childrens are expanded
     if (d.children) {
       if (compress){
-          if (d.id === 'Convocated') {
+        if (d.id === 'Convocated') {
           const demographicNode = d.parent.children[1];
           if (demographicNode.children) {
+            this.update(d);
             return;
           }
         } 
@@ -845,8 +854,9 @@ export class Chart {
 
         if (d.id === 'Enrolled'){  
           const convocationNode = d.parent.children[0];
-          if (convocationNode.data.borderWidth === 2){
-            this.onButtonClick(convocationNode);
+          if (convocationNode.data.borderWidth === attrs.unclickedWidth){
+            this.onButtonClick(convocationNode, false);
+
           }
         }
 
@@ -857,7 +867,7 @@ export class Chart {
       if (d.id === 'Enrolled') {
         const convocationNode = d.parent.children[0];
         if (convocationNode.children == null) {
-          this.onButtonClick(convocationNode);
+          this.onButtonClick(convocationNode, false);
         }
       }
 

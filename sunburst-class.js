@@ -10,8 +10,8 @@ export class Sunburst {
       container: 'body',
       data: null,
       extendedLineLength: 40,
-      textDistance: 15,
-      outerTextSize: '20px',
+      textDistance: 25,
+      outerTextSize: '25px',
       attributeIndex: null,
       history: [],
       displayNodes: null,
@@ -31,11 +31,11 @@ export class Sunburst {
         '55+': '#006d2c',
         0: '#989898',
       },
+      textCirclesCategory: [],
       textCirclesCount: [],
       textCirclesPercent: [],
-      centerText: null,
-      centerTextSize: '25px',
-      centerTextHeight: 60,
+      titleTextSize: '25px',
+      titleTextHeight: 60,
       compareMode: false,
       legendWidth: 150,
       backgroundColor: this.rgbaObjToColor(colors.Slate_Grey),
@@ -84,7 +84,10 @@ export class Sunburst {
         '46-55': 6,
         '55+' : 7};
     diversityValues.Age.sort((e1, e2) => (order[e1] - order[e2]));
- 
+ 		
+    //Sorting year
+    academicValues['Academic Year'].sort((e1, e2) => (Number(e1.substring(0, 4)) - Number(e2.substring(0, 4) )));
+    
     //preparing slices
     const cartesian = (...a) =>
       a.reduce((a, b) =>
@@ -271,7 +274,13 @@ export class Sunburst {
         }
       }
 
-			return list.join();
+      if (list.length == 0)
+        return '';
+      
+			if (list.length == 1)
+       	return 'Students across ' + list.pop() + '.'; 
+      
+			return 'Students across ' + list.slice(0, -1).join() + ' and ' + list.pop() + '.';
     };
      
     const width = d3
@@ -281,7 +290,7 @@ export class Sunburst {
     
     let title = d3
       .select('#title-text')
-      .style('font-size', attrs.centerTextSize)
+      .style('font-size', attrs.titleTextSize)
       .text(titleBuilder(academicValues, diversityValues));
     
     this.render(values);
@@ -312,6 +321,7 @@ export class Sunburst {
     if (!attrs.compareMode) { 
       
       // disable compare mode if only 1 slice
+      document.getElementById('compare-button').innerHTML = 'Compare';
       if (Object.keys(values).length === 1){
         document.getElementById('compare-button').disabled = true;
         document.getElementById('compare-button').style.backgroundColor =this.rgbaObjToColor(colors.Disabled);
@@ -324,7 +334,8 @@ export class Sunburst {
       
       this.renderSunburst(values);
     } else {
-      document.getElementById('compare-button').style.backgroundColor = 'red';
+      document.getElementById('compare-button').style.backgroundColor =  this.rgbaObjToColor(colors.Button);
+      document.getElementById('compare-button').innerHTML = 'Conjoin';
       this.renderCompare(values);
     }
     this.renderLegend(values);
@@ -351,7 +362,7 @@ export class Sunburst {
     const containerHeight = +container.height;
     const containerWidth = +container.width;
 
-    const height = containerHeight-attrs.centerTextHeight;
+    const height = containerHeight-attrs.titleTextHeight;
     const width = containerWidth - attrs.legendWidth;
 
     const params = this.computeSunburstParameters(
@@ -369,7 +380,7 @@ export class Sunburst {
       .attr('height', height)
       .attr(
         'transform',
-        `translate(${width / 2},${height/ 2  + attrs.centerTextHeight})`
+        `translate(${width / 2},${height/ 2  + attrs.titleTextHeight})`
       );
 
     let centerGroup = svg
@@ -693,10 +704,6 @@ export class Sunburst {
     const attrs = this.getChartState();
     const sb = this;
 
-    if (attr === 'Age')
-      attrs.centerText.text('Age: ' + selectedValue);
-    else attrs.centerText.text(selectedValue);
-
     let sliceCount = 0;
     for (const slice in values) {
       let arcCount = 0;
@@ -714,6 +721,11 @@ export class Sunburst {
           attrs.data[values[slice][attr][selectedValue]]
         );
         let percent = count / sum;
+        if (attr === 'Age')
+          	attrs.textCirclesCategory[sliceCount].text('Age: ' + selectedValue);
+          else
+            attrs.textCirclesCategory[sliceCount].text(selectedValue);
+        
         if (count != 0) {
           if (count < 5) {
             attrs.textCirclesCount[sliceCount].text('<5');
@@ -724,6 +736,7 @@ export class Sunburst {
             Number((percent * 100).toFixed(1)) + '%'
           );
         } else {
+          
           attrs.textCirclesCount[sliceCount].text('No');
           attrs.textCirclesPercent[sliceCount].text(
             'Students'
@@ -739,13 +752,16 @@ export class Sunburst {
 
   removeValues(value) {
     const attrs = this.getChartState();
-    attrs.centerText.text('');
+    for (const textCircle of attrs.textCirclesCategory) {
+      textCircle.text('');
+    }
     for (const textCircle of attrs.textCirclesCount) {
       textCircle.text('');
     }
     for (const textCircle of attrs.textCirclesPercent) {
       textCircle.text('');
     }
+    
     const id = value + 'rect';
     d3.select("[id='" + id + "']").style('stroke-width', 1);
   }
@@ -763,7 +779,7 @@ export class Sunburst {
     const containerWidth = +container.width;
 
     const width = containerWidth - attrs.legendWidth; //minus because of legend
-    const height = containerHeight - attrs.centerTextHeight;
+    const height = containerHeight - attrs.titleTextHeight;
     const numSlices = Object.keys(values).length;
     const dimensions = sb.computeCompareDimensions(
       width,
@@ -919,8 +935,6 @@ export class Sunburst {
                 }
               }
 
-              console.log(newValues);
-
               attrs.history.push(values);
               sb.render(newValues);
             }
@@ -929,16 +943,10 @@ export class Sunburst {
     };
 
     // Clear textCircle lists
+    attrs.textCirclesCategory = [];
     attrs.textCirclesCount = [];
     attrs.textCirclesPercent = [];
-
-    attrs.centerText = attrs.svg
-      .append('text')
-      .attr('x', width / 2)
-      .attr('y', 15 + attrs.centerTextHeight / 2)
-      .style('text-anchor', 'middle')
-      .style('font-size', attrs.centerTextSize)
-      .text('');
+	
 
     let sliceCount = 0;
     for (const slice in values) {
@@ -950,7 +958,7 @@ export class Sunburst {
         col * size +
         ((col + 1) * whitespaceWidth) / (cols + 1);
       let translateY =
-        attrs.centerTextHeight +
+        attrs.titleTextHeight +
         size / 2 +
         row * size +
         ((row + 1) * whitespaceHeight) / (rows + 1);
@@ -980,22 +988,32 @@ export class Sunburst {
         .append('text')
         .attr('x', 0)
         .attr('y', 0)
-        .attr('dy', '0em')
+        .attr('dy', '-0.5em')
         .style('text-anchor', 'middle')
         .style('font-size', innerTextSize)
         .text('');
-
+      
       let textCircle2 = centerGroup
         .append('text')
         .attr('x', 0)
         .attr('y', 0)
-        .attr('dy', '1em')
+        .attr('dy', '0.5em')
         .style('text-anchor', 'middle')
         .style('font-size', innerTextSize)
         .text('');
 
-      attrs.textCirclesCount.push(textCircle1);
-      attrs.textCirclesPercent.push(textCircle2);
+      let textCircle3 = centerGroup
+        .append('text')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('dy', '1.5em')
+        .style('text-anchor', 'middle')
+        .style('font-size', innerTextSize)
+        .text('');
+
+      attrs.textCirclesCategory.push(textCircle1);
+      attrs.textCirclesCount.push(textCircle2);
+      attrs.textCirclesPercent.push(textCircle3);
 
       let sunburstGroup = svg
         .append('g')
@@ -1020,6 +1038,7 @@ export class Sunburst {
           );
         }
 
+        
         if (sum == 0) {
           let endAngle = Math.min(
             sliceStartAngle + arcLength,

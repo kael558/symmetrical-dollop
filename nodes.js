@@ -155,12 +155,11 @@ const initialNodes = {
   },
 }
 
-
 export const colors = {
   Report_Node_Fill: {"red":31,"green":120,"blue":180,"alpha":1},
   Diversity_Node_Fill: {"red":51,"green":160,"blue":44,"alpha":1},
   Academic_Node_Fill: {"red":166,"green":206,"blue":227,"alpha":1},
-  Uncollected_Node_Fill: {"red":178,"green":223,"blue":138,"alpha":1},
+  Uncollected_Node_Fill: {"red":128,"green":128,"blue":128,"alpha":1},
   Transparent: {"red":255,"green":255,"blue":255,"alpha":0},
   White: {"red":255,"green":255,"blue":255,"alpha":1},
   Blue: {"red":0,"green":0,"blue":255,"alpha":1},
@@ -200,7 +199,7 @@ const nodeDimensions = {
     height: sizes.Large.height,
     borderColor: colors.Black,
     backgroundColor: colors.Report_Node_Fill,
-    textColor: colors.White,
+    textColor: colors.Black,
     connectorLineColor: colors.Transparent,
     expandable: true,
     clickable: true
@@ -210,7 +209,7 @@ const nodeDimensions = {
     height: sizes.Medium.height,
     borderColor: colors.Black,
     backgroundColor: colors.Uncollected_Node_Fill,
-    textColor: colors.White,
+    textColor: colors.Black,
     connectorLineColor: colors.Transparent,
     expandable: true,
     clickable: false
@@ -220,7 +219,7 @@ const nodeDimensions = {
     height: sizes.Medium.height,
     borderColor: colors.Black,
     backgroundColor: colors.Academic_Node_Fill,
-    textColor: colors.White,
+    textColor: colors.Black,
     connectorLineColor: colors.Black,
     expandable: true,
     clickable: true
@@ -230,7 +229,7 @@ const nodeDimensions = {
     height: sizes.Medium.height,
     backgroundColor: colors.Diversity_Node_Fill,
     borderColor: colors.Black,
-    textColor: colors.White,
+    textColor: colors.Black,
     connectorLineColor: colors.Black,
     expandable: true,
     clickable: true
@@ -239,7 +238,7 @@ const nodeDimensions = {
   	width: sizes.Small.width,
     height: sizes.Small.height,
     borderColor: colors.Black,
-    textColor: colors.White,
+    textColor: colors.Black,
     backgroundColor: colors.White,
     expandable: false,
     clickable: true
@@ -249,8 +248,8 @@ const nodeDimensions = {
     height: sizes.Small.height,
     borderColor: colors.Black,
     backgroundColor: colors.Uncollected_Node_Fill,
-    textColor: colors.White,
-		connectorLineColor: colors.Grey,
+    textColor: colors.Black,
+		connectorLineColor: colors.Uncollected_Node_Fill,
     expandable: false,
     clickable: false
   }
@@ -270,7 +269,7 @@ const makeNode = (nodeId, parentNodeIds, nodeType, parentNodeType) => {
   if (nodeType == VALUE_NODE){
     node.backgroundColor = nodeDimensions[parentNodeType].backgroundColor; 
   	//node.borderColor = nodeDimensions[parentNodeType].borderColor; 
-    node.connectorLineColor = nodeDimensions[parentNodeType].borderColor; 
+    node.connectorLineColor = nodeDimensions[parentNodeType].backgroundColor; 
     if (nodeId === 'STEM'){
     	node.description = 'Aggregation of faculty of Science, Engineering & Design and Mathematics'
     } else if (nodeId === 'Non-STEM'){
