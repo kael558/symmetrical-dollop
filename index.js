@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", event => {
   }
 
   function displayViz() {
-    let test = true;
+    let test = false;
     let academicValuesTest = {
       "Academic Year": ["Total"],
       Degree: ["Bachelors", "Masters", "Ph.D."],
