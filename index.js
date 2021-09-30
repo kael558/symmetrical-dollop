@@ -1,8 +1,6 @@
-import { Chart } from "./charts-class";
-import { Sunburst } from "./sunburst-class";
+import { Chart } from "./charts-class.js";
+import { Sunburst } from "./sunburst-class.js";
 
-
-console.log("plaese work");
 document.addEventListener("DOMContentLoaded", event => {
   //sunburst
   let sb;

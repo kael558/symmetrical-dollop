@@ -1,4 +1,4 @@
-import { colors } from './nodes';
+import { colors } from './nodes.js';
 
 export class Sunburst {
   constructor() {
@@ -295,6 +295,156 @@ export class Sunburst {
     
     this.render(values);
   }
+
+
+  /*
+   - creates the group elements for each pie
+      groups = [g1, g2, ...]
+
+   - formats the data into dataset =
+   [{ queries: ["2019/2020,Male...", "2019/2020,Female...","...],
+      type: "Sex",
+      sliceNumber: 0,
+      ringNumber: 0},
+    { queries: ["2018/2019,Male...", "2018/2019,Female...","...],
+      type: "Sex", //gives us the color scheme
+      sliceNumber: 1,
+      ringNumber: 0}]
+
+
+            arc: arcElement with innerRadius & outerRadius defined,
+      color: ["#ffewf","#feefef","...],
+      group: groupElement,
+   */
+
+
+  renderNew(academicValues, diversityValues){
+    const attrs = this.getChartState();
+
+    // Sorting age
+    let order = {'<=17': 0,
+        '18-20': 1,
+        '21-25': 2,
+        '26-30': 3,
+        '31-35': 4,
+        '36-45': 5,
+        '46-55': 6,
+        '55+' : 7};
+    diversityValues.Age.sort((e1, e2) => (order[e1] - order[e2]));
+
+    // Sorting year
+    academicValues['Academic Year'].sort((e1, e2) => (Number(e1.substring(0, 4)) - Number(e2.substring(0, 4) )));
+
+    // Preparing slices
+    const cartesian = (...a) =>a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+
+    let slices = cartesian(
+      academicValues['Academic Year'],
+      academicValues.Degree,
+      academicValues.Faculty,
+      academicValues['Study Status']
+    );
+
+    const makeQuery = (slice, diversityAttr, value) => {
+      let query = [...slice];
+      for (const prop in diversityValues) {
+        if (prop !== diversityAttr) {
+          query.push('Total');
+        } else {
+          query.push(value);
+        }
+      }
+      return query;
+    };
+
+    const container = d3
+      .select('#sunburst')
+      .node()
+      .getBoundingClientRect();
+    const containerHeight = +container.height;
+    const containerWidth = +container.width;
+
+    const height = containerHeight - attrs.titleTextHeight;
+    const width = containerWidth - attrs.legendWidth;
+
+    const params = this.computeSunburstParameters(
+      width,
+      height,
+      numArcs
+    );
+    const arcWidth = params.arcWidth;
+    const innerRadius = params.innerRadius;
+    const innerTextSize = params.innerTextSize;
+
+    // construct default pie layout
+    const pie = d3.pie().value(function(d){ return d; }).sort(null);
+
+    attrs.arcs = [];
+
+    const totalSlices = slices.length;
+    let sliceCount = 0;
+    for (let slice of slices) {
+      const startAngle = sliceCount*2*Math.PI/slices.length;
+      const endAngle = (sliceCount+1)*2*Math.PI/slices.length;
+
+      let ringCount = 0;
+      for (let attr in diversityValues) {
+        const arc = d3.arc().innerRadius(ringCount*)outerRadius((ringCount+1)*a);
+
+        if (diversityValues[attr].length == 0) continue;
+
+        let sum = 0;
+				for (let value of diversityValues[attr]) {
+          sum+=Number(attrs.data[makeQuery(slice,attr,value).join()]);
+        }
+
+        let arcCount = 0;
+        for (let value of diversityValues[attr]) {
+          let arcElement = attrs.container.append("path")
+            .attr("d", arcGenerator)
+
+          let arc = {};
+      		arc.query = makeQuery(slice,attr,value);
+          arc.value = Number(attrs.data[arc.query.join()]);
+          arc.sum = sum;
+          arc.sliceNumber = sliceCount;
+          arc.ringNumber = ringCount;
+          arc.arcNumber = arcCount;
+          arc.arcElement = arcElement;
+          attrs.arcs.push(arc);
+          arcCount++;
+        }
+        ringCount++;
+      }
+      sliceCount++;
+    }
+    console.log(attrs.arcs);
+
+
+
+
+
+  }
+
+  update(){
+    const totalSlices = attrs.totalSlices;
+
+
+    const get
+
+    for (const entry in dataset){
+
+
+
+    }
+
+
+
+
+  }
+
+
+
 
   /* Recurring render */
   render(values) {

@@ -1,4 +1,4 @@
-import { nodes, colors } from "./nodes";
+import { nodes, colors } from "./nodes.js";
 
 export class Chart {
   constructor() {
@@ -812,7 +812,8 @@ export class Chart {
       } else {
         if (data.borderWidth === attrs.unclickedWidth && select) {
           //unclicked
-          data.borderWidth = attrs.clickedWidth;
+	  if (d.parent.id === 'Root')
+          	data.borderWidth = attrs.clickedWidth;
         } else if (compress) {
           data.borderWidth = attrs.unclickedWidth;
         }
