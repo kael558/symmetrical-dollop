@@ -11,23 +11,19 @@ const UNCOLLECTED_VALUE_NODE = 'UNCOLLECTED_VALUE';
 
 
 const initialNodes = {
-  Convocated: {
-    type: REPORT_NODE,
-    description: 'The number of students that have convocated.'
-  },
   Enrolled: {
     type: REPORT_NODE,
     description: 'The number of students that are enrolled.'
   },
   Faculty: {
-    parents: ['Convocated','Enrolled'],
+    parents: ['Enrolled'],
     collectedValues: ['STEM', 'Non-STEM', 'Engineering & Design', 'Science', 'Public Affairs', 'Business', 'Arts & Social Sciences'],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
     description: 'Department and faculty are mapped from student degree and major or majors.'
   },
   'Academic Year': {
-    parents: ['Convocated','Enrolled'],
+    parents: ['Enrolled'],
     collectedValues: ['2013/14',
       '2014/15',
       '2015/16',
@@ -41,7 +37,7 @@ const initialNodes = {
     description: 'Academic Year is made up of three terms (Summer, Fall, Winter).'
   },
   Degree: {
-    parents: ['Convocated','Enrolled'],
+    parents: ['Enrolled'],
     collectedValues: ['Bachelors',
       'Masters',
       'Ph.D.'],
@@ -84,7 +80,7 @@ const initialNodes = {
     description: 'The age ranges of students.'
   },
   Sex: {
-    parents: ['Convocated','Enrolled'],
+    parents: ['Enrolled'],
     collectedValues: ['Female', 'Male'],
   	uncollectedValues: ['Non-binary'],
     type: EDI_ATTRIBUTE_NODE,

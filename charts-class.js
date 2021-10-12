@@ -848,36 +848,15 @@ export class Chart {
     // If childrens are expanded
     if (d.children) {
       if (compress) {
-        if (d.id === "Convocated") {
-          const demographicNode = d.parent.children[1];
-          if (demographicNode.children) {
-            this.update(d);
-            return;
-          }
-        }
 
         //Collapse them
         d._children = d.children;
         d.children = null;
 
-        if (d.id === "Enrolled") {
-          const convocationNode = d.parent.children[0];
-          if (convocationNode.data.borderWidth === attrs.unclickedWidth) {
-            this.onButtonClick(convocationNode, false);
-          }
-        }
-
         // Set descendants expanded property to false
         this.setExpansionFlagToChildren(d, false);
       }
     } else {
-      if (d.id === "Enrolled") {
-        const convocationNode = d.parent.children[0];
-        if (convocationNode.children == null) {
-          this.onButtonClick(convocationNode, false);
-        }
-      }
-
       // Expand children
       d.children = d._children;
       d._children = null;
