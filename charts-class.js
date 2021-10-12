@@ -308,27 +308,7 @@ export class Chart {
       .style("background-color", attrs.backgroundColor);
     attrs.svg = svg;
 
-	// Drop shadow
-    let defs = svg.append("defs");
-    var filter = defs.append("filter")
-      .attr("id", "drop-shadow")
-
-  filter.append("feGaussianBlur")
-      .attr("in", "SourceAlpha")
-      .attr("stdDeviation", 4)
-      .attr("result", "blur");
-  filter.append("feOffset")
-      .attr("in", "blur")
-      .attr("dx", 10)
-      .attr("dy", 10)
-      .attr("result", "offsetBlur");
-
-  var feMerge = filter.append("feMerge");
-
-  feMerge.append("feMergeNode")
-      .attr("in", "offsetBlur")
-  feMerge.append("feMergeNode")
-      .attr("in", "SourceGraphic");
+	
 
     //Add container g element
     const chart = svg
@@ -657,7 +637,6 @@ export class Chart {
       .attr("cursor", "pointer")
       .attr("stroke", ({ borderColor }) => borderColor)
       .style("fill", ({ backgroundColor }) => backgroundColor)
-      .style("filter", "url(#drop-shadow)");
 
     // Remove any exiting nodes after transition
     const nodeExitTransition = nodesSelection
