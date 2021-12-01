@@ -5,27 +5,21 @@
     <link rel="stylesheet" href="styles.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/d3@5.15.1/dist/d3.min.js"></script>
-    <script type="module" src="index.js"></script>
   </head>
   <body>
     <div id="node-div">
-      <div
-      	id="chart"
-        class="chart-container"
-        style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-        "
-      ></div>
+      <svg id="chart-container"></svg>
       <svg class="legend" id="node-legend" width=200 height=120></svg>
       <svg id="selected-attributes" width=200 height=1000></svg>
       <button type="button" id="visualize-button">Visualize<i class="fa fa-arrow-right"></i></button>
+      <button type="button" id="back-button-nodes" class = "back-button"><i class="fa fa-arrow-left "></i>Back</button>
       <i class="fa" id="info-open-button">&#xf05a;</i>
+      <i class="fa" id="select-all-button">&#xf058;</i>
+      
+      <text id="nav-title-text" class="title-text"></text>
     </div>
  
+   
     <div id="viz-div" style="
           position: fixed;
           top: 0;
@@ -34,7 +28,7 @@
           height: 100%;
         ">
        <svg
-      	id="sunburst"
+      	id="sunburst-container"
         class="sunburst-container"
         style="
           position: fixed;
@@ -45,15 +39,17 @@
         "
       ></svg>
       <svg class="legend" id="sunburst-legend" width=150 height=1200></svg>
-      <button type="button" id="back-button"><i class="fa fa-arrow-left "></i>Back</button>
+      <button type="button" id="back-button" class = "back-button"><i class="fa fa-arrow-left "></i>Back</button>
       <button type="button" id="compare-button">Compare</button>
-      <text id="title-text"></text>
+      <text id="viz-title-text" class="title-text"></text>
     </div>
 		<div id="info-div">
       <div id="info-text">
         We present an interactive data visualization design representing student demographics and academic information. Our goal is to demonstrate the relationships between the diversity-related attributes collected as part of demographics information and the academic attributes. We first collected university student data from our local university. In collaboration with a researcher studying the impact of diversity, equity and inclusion, we chose relevant data attributes from our dataset. Next, we sketched as many designs as we found relevant representing our dataset and shared them with our collaborator. As a group, we selected the designs that we saw value in implementing. Lastly, we developed an interactive data visualization on the web. With our design, we draw attention to the lack of demographics data collected that describe student diversity. By showcasing the potential missing demographic data attributes, we hope to raise awareness about the importance of collecting this data in universities.
          <i class="fa fa-times-circle fa-2x" id="info-close-button"></i>
       </div>
+       
     </div>
+    <script src="bundle.js"></script>
   </body>
 </html>

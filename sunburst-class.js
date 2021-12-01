@@ -1,4 +1,4 @@
-import { colors } from './nodes.js';
+import { colors } from './nodes';
 
 export class Sunburst {
   constructor() {
@@ -284,18 +284,17 @@ export class Sunburst {
     };
      
     const width = d3
-      .select('#sunburst')
+      .select('#sunburst-container')
       .node()
       .getBoundingClientRect().width - attrs.legendWidth;
     
     let title = d3
-      .select('#title-text')
+      .select('#viz-title-text')
       .style('font-size', attrs.titleTextSize)
       .text(titleBuilder(academicValues, diversityValues));
     
     this.render(values);
   }
-
 
   /* Recurring render */
   render(values) {
@@ -311,8 +310,7 @@ export class Sunburst {
       const back = () => sb.render(attrs.history.pop());
       document.getElementById('back-button').onclick = back;
     } else {
-      document.getElementById('back-button').onclick =
-        attrs.displayNodes;
+      document.getElementById('back-button').onclick = attrs.displayNodes;
     }
 
     // remove all elements in svg
@@ -357,7 +355,7 @@ export class Sunburst {
     const arcLength = (2 * Math.PI) / numSlices;
 
     const container = d3
-      .select('#sunburst')
+      .select('#sunburst-container')
       .node()
       .getBoundingClientRect();
     const containerHeight = +container.height;
@@ -397,10 +395,6 @@ export class Sunburst {
       .style('stroke-width', 5)
       .attr('fill', 'white');
 
-   
-          
-          
-    
     let textCircle1 = centerGroup
       .append('text')
       .attr('x', 0)
@@ -647,6 +641,8 @@ export class Sunburst {
             sliceStartAngle + arcLength,
             2 * Math.PI
           );
+         
+          
           arcBuilder(
             arc,
             sliceStartAngle,
@@ -669,7 +665,10 @@ export class Sunburst {
               2 * Math.PI
             );
             sliceStartAngle = endAngle;
-
+            
+						console.log(slice)
+          	console.log(percent + ": " + count + " : " + sum)
+            
             arcBuilder(
               arc,
               startAngle,
@@ -773,7 +772,7 @@ export class Sunburst {
     const sb = this;
 
     const container = d3
-      .select('#sunburst')
+      .select('#sunburst-container')
       .node()
       .getBoundingClientRect();
     const containerHeight = +container.height;

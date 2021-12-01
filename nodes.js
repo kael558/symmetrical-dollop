@@ -8,9 +8,7 @@ const UNCOLLECTED_ATTRIBUTE_NODE = 'UNCOLLECTED_ATTRIBUTE';
 const VALUE_NODE = 'VALUE';
 const UNCOLLECTED_VALUE_NODE = 'UNCOLLECTED_VALUE';
 
-
-
-const initialNodes = {
+export const initialNodes = {
   Enrolled: {
     type: REPORT_NODE,
     description: 'The number of students that are enrolled.'
@@ -34,7 +32,8 @@ const initialNodes = {
       '2020/21',],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Academic Year is made up of three terms (Summer, Fall, Winter).'
+    description: 'Academic Year is made up of three terms (Summer, Fall, Winter).',
+    ordered: true
   },
   Degree: {
     parents: ['Enrolled'],
@@ -43,7 +42,8 @@ const initialNodes = {
       'Ph.D.'],
   	uncollectedValues: [],
     type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Level of study of a student.'
+    description: 'Level of study of a student.',
+    ordered: true
   },
  
   'Study Status': {
@@ -77,7 +77,8 @@ const initialNodes = {
     ],
     uncollectedValues: ['55-59','60-64','65-69', '70-74', '75-79', '80+'],
     type: EDI_ATTRIBUTE_NODE,
-    description: 'The age ranges of students.'
+    description: 'The age ranges of students.',
+    ordered: true
   },
   Sex: {
     parents: ['Enrolled'],
@@ -169,134 +170,147 @@ export const colors = {
   Disabled_Text: {"red":255,"green":255,"blue":255,"alpha":0.2},
 }
 
-const sizes = {
-	Large: {width: 270, height: 70},
-  Medium: {width: 280, height: 70},
-	Small: {width: 330, height: 70}
+     
+
+
+export const nodes = {
+           "name": "",
+           "color": colors.Transparent,
+  				 "borderWidth": "0px",
+           "children": [
+            {
+             "name": "Faculty",
+             "color": colors.Academic_Node_Fill,
+             description: 'Department and faculty are mapped from student degree and major or majors.',
+             "children": [
+                {"name": "STEM", "size": 12},
+                {"name": "Non-STEM", "size": 12},
+                {"name": "Engineering & Design", "size": 12},
+                {"name": "Science", "size": 12},
+                {"name": "Public Affairs", "size": 12},
+                {"name": "Business", "size": 12},
+               	{"name": "Arts & Social Sciences", "size": 12}
+             ]  
+            }, 
+            {
+             "name": "Academic Year",
+             "color": colors.Academic_Node_Fill,
+              description: 'Academic Year is made up of three terms (Summer, Fall, Winter).',
+             "children": [
+                {"name": "2013/14", "size": 10.5},
+                {"name": "2014/15", "size": 10.5},
+                {"name": "2015/16", "size": 10.5},
+                {"name": "2016/17", "size": 10.5},
+                {"name": "2017/18", "size": 10.5},
+                {"name": "2018/19", "size": 10.5},
+                {"name": "2019/20", "size": 10.5},
+                {"name": "2020/21", "size": 10.5},
+             ]  
+            },
+						{
+             "name": "Degree",
+             "color": colors.Academic_Node_Fill,
+              description: 'Level of study of a student.',
+             "children": [
+                {"name": "Bachelors", "size": 28},
+                {"name": "Masters", "size": 28},
+                {"name": "Ph.D.", "size": 28},
+             ]  
+            },
+            {
+             "name": "Study Status",
+             "color": colors.Academic_Node_Fill,
+              description: 'A full-time student is enrolled in 3 or more credits across the Fall and Winter terms whereas a part-time student is enrolled in less.',
+             "children": [
+                {"name": "Part-time", "size": 42},
+                {"name": "Full-time", "size": 42},
+             ]  
+            },
+            {
+             "name": "Citizenship Status",
+             "color": colors.Diversity_Node_Fill,
+             description: 'Students are categorized based on whether they are charged domestic or international fees.',
+             "children": [
+                {"name": "Domestic", "size": 42},
+                {"name": "International", "size": 42},
+             ]  
+            },
+            {
+             "name": "Age",
+             "color": colors.Diversity_Node_Fill,
+              description: 'The age ranges of students.',
+
+             "children": [
+                {"name": "<=17", "size": 6},
+                {"name": "18-20", "size": 6},
+                {"name": "21-25", "size": 6},
+                {"name": "26-30", "size": 6},
+                {"name": "31-35", "size": 6},
+                {"name": "36-45", "size": 6},
+                {"name": "46-55", "size": 6},
+                {"name": "55+", "size": 6},
+                {"name": "55-59", "color":colors.Uncollected_Node_Fill, "size": 6},
+                {"name": "60-64", "color": colors.Uncollected_Node_Fill, "size": 6},
+                {"name": "65-69", "color": colors.Uncollected_Node_Fill, "size": 6},
+                {"name": "70-74", "color": colors.Uncollected_Node_Fill, "size": 6},
+                {"name": "75-79", "color": colors.Uncollected_Node_Fill, "size": 6},
+                {"name": "80+", "color": colors.Uncollected_Node_Fill, "size": 6}
+             ]  
+            },
+            {
+             "name": "Sex",
+             "color": colors.Diversity_Node_Fill,
+              description: 'This is mislabeled by the university. Ideally, the label should be \'Gender\' and more genders should be collected.',
+             "children": [
+                {"name": "Male", "size": 28},
+                {"name": "Female", "size": 28},
+                {"name": "Non-binary", "color":colors.Uncollected_Node_Fill, "size": 28}
+             ]  
+            },
+            {
+             "name": "Race",
+             "color":colors.Uncollected_Node_Fill,
+              description: 'University does not collect the race of a student.',
+             "size": 84
+            },
+            {
+             "name": "Religion/Spirituality",
+             "color":colors.Uncollected_Node_Fill,
+              description: 'University does not collect the religion/spirituality of a student.',
+              "size":  84
+            },
+            {
+             "name": "Dis/ability",
+             "color": colors.Uncollected_Node_Fill,
+              description: 'University does not collect the dis/ability of a student.',
+              "size":  84
+            },
+            {
+             "name": "Indigeneity",
+             "color": colors.Uncollected_Node_Fill,
+               description: 'University does not collect the indigeneity of a student.',
+              "size":  84
+            },
+            {
+             "name": "Languages Spoken",
+             "color": colors.Uncollected_Node_Fill,
+              description: 'University does not collect the languages spoken by a student.',
+              "size":  84
+            },
+            {
+             "name": "Ethnicity",
+             "color": colors.Uncollected_Node_Fill,
+              description: 'University does not collect the other language of a student.',
+              "size":  84
+            },
+            {
+             "name": "Nation/Regional Identity",
+             "color": colors.Uncollected_Node_Fill,
+              description: 'University does not collect the nation of origin or regional identity of a student.',
+              "size":  84
+            },
+           ]
 }
-
-const borderWidth = 5
-const borderRadius = 5
-const connectorLineWidth = 5
-
-const nodeDimensions = {
-  [INVISIBLE_NODE] : {
-    width: sizes.Large.width,
-    height: sizes.Large.height,
-    borderColor: colors.Transparent,
-    backgroundColor: colors.Transparent,
-    textColor: colors.Transparent,
-    connectorLineColor: colors.Black,
-    expandable: false,
-    clickable: false
-  },
-	[REPORT_NODE] : {
-  	width: sizes.Large.width,
-    height: sizes.Large.height,
-    borderColor: colors.Black,
-    backgroundColor: colors.Report_Node_Fill,
-    textColor: colors.Black,
-    connectorLineColor: colors.Transparent,
-    expandable: true,
-    clickable: true
-  },
-  [UNCOLLECTED_ATTRIBUTE_NODE] : {
-    width: sizes.Medium.width,
-    height: sizes.Medium.height,
-    borderColor: colors.Black,
-    backgroundColor: colors.Uncollected_Node_Fill,
-    textColor: colors.Black,
-    connectorLineColor: colors.Transparent,
-    expandable: true,
-    clickable: false
-  },
-  [ACADEMIC_ATTRIBUTE_NODE]: {
-    width: sizes.Medium.width,
-    height: sizes.Medium.height,
-    borderColor: colors.Black,
-    backgroundColor: colors.Academic_Node_Fill,
-    textColor: colors.Black,
-    connectorLineColor: colors.Black,
-    expandable: true,
-    clickable: true
-  },
-  [EDI_ATTRIBUTE_NODE]: {
-    width: sizes.Medium.width,
-    height: sizes.Medium.height,
-    backgroundColor: colors.Diversity_Node_Fill,
-    borderColor: colors.Black,
-    textColor: colors.Black,
-    connectorLineColor: colors.Black,
-    expandable: true,
-    clickable: true
-  },
-  [VALUE_NODE]: {
-  	width: sizes.Small.width,
-    height: sizes.Small.height,
-    borderColor: colors.Black,
-    textColor: colors.Black,
-    backgroundColor: colors.White,
-    expandable: false,
-    clickable: true
-  },
-  [UNCOLLECTED_VALUE_NODE]: {
-  	width: sizes.Small.width,
-    height: sizes.Small.height,
-    borderColor: colors.Black,
-    backgroundColor: colors.Uncollected_Node_Fill,
-    textColor: colors.Black,
-		connectorLineColor: colors.Uncollected_Node_Fill,
-    expandable: false,
-    clickable: false
-  }
-}
-
-const makeNode = (nodeId, parentNodeIds, nodeType, parentNodeType) => {
-	let node = JSON.parse(JSON.stringify(nodeDimensions[nodeType]));
-  node.nodeId = nodeId;
-  node.parentNodeIds = parentNodeIds;
-	node.expanded = false;
-  node.borderWidth = borderWidth;
-  node.borderRadius = borderRadius;
-  node.connectorLineWidth = connectorLineWidth;
- 	if (initialNodes[nodeId])
-    	node.description = "" || initialNodes[nodeId].description;
-  
-  if (nodeType == VALUE_NODE){
-    node.backgroundColor = nodeDimensions[parentNodeType].backgroundColor; 
-  	//node.borderColor = nodeDimensions[parentNodeType].borderColor; 
-    node.connectorLineColor = nodeDimensions[parentNodeType].backgroundColor; 
-    if (nodeId === 'STEM'){
-    	node.description = 'Aggregation of faculty of Science, Engineering & Design and Mathematics'
-    } else if (nodeId === 'Non-STEM'){
-      node.description = 'Aggregation of all non-STEM faculties'
-    } 
-  } else if (nodeType === UNCOLLECTED_VALUE_NODE){
-   	node.borderColor = nodeDimensions[parentNodeType].borderColor;  
-  }
-  return node;
-}
-
-const populateNodes = (nodes, initialNodes) => {
-	for (const key in initialNodes) {
-    const node = initialNodes[key];
-
-    if (node.type === REPORT_NODE){
-    		nodes.push(makeNode(key, ['Root'], REPORT_NODE));
-    } else {
-        nodes.push(makeNode(key, node.parents, node.type)); //link to first parent
-      	//let invisibleID = 'invisible'+key;
-      	//nodes.push(makeNode(invisibleID, [key], INVISIBLE_NODE, node.type));
-        for (const link of node.collectedValues)
-          nodes.push(makeNode(link, [key], VALUE_NODE, node.type));
-        for (const link of node.uncollectedValues)
-          nodes.push(makeNode(link, [key], UNCOLLECTED_VALUE_NODE, node.type));
-    }
-	}
-}
-
-export const nodes = [makeNode('Root', [null], INVISIBLE_NODE)];
-populateNodes(nodes, initialNodes);
 
 
 
