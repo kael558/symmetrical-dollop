@@ -290,7 +290,7 @@ export class Chart {
 				
         const text = newSlice.append('text')
         				       	.attr('class', 'arc-text')
-        							.style('font-size', "12px")
+        							.style('font-size', "30px")
             .attr('display', d => textFits(d) ? null : 'none');
 
         // Add white contour
