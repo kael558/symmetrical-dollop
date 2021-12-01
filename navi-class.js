@@ -241,7 +241,7 @@ export class Chart {
         		.attr('dy', -0.5)
         		.attr('width',  innerRadius*2)
   					.attr('height',  innerRadius*2)
-            .style('font-size', "30px")
+            .style('font-size', "60px")
         		.append('xhtml:p')
               .text(attrs.placeholderInnerText)
 
@@ -289,9 +289,9 @@ export class Chart {
                 .attr('d', middleArcLine);
 				
         const text = newSlice.append('text')
-        				       	.attr('class', 'arc-text')
-        							.style('font-size', "30px")
-            .attr('display', d => textFits(d) ? null : 'none');
+        			.attr('class', 'arc-text')
+        			.style('font-size', "30px")
+            			.attr('display', d => textFits(d) ? null : 'none');
 
         // Add white contour
         text.append('textPath')
