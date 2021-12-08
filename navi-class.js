@@ -23,9 +23,9 @@ export class Chart {
       duration: 600,
       strokeWidth: 3,
       initialZoom: 1,
-      titleTextSize: '25px',
-      centerTextSize: '15px',
-      sliceTextSize: '12px',
+      titleTextSize: '40px',
+      centerTextSize: '25px',
+      sliceTextSize: '25px',
       splitSize: '0.5em',
        color: {
         Male: '#fc8d59',

@@ -152,7 +152,7 @@ li{
 #info-text{
   position: fixed; 
   color: white;
-  top: 5%;
+  top: 10%;
   left: 15%;
   max-width: 70%;
   background-color: #708090; /* Black background with opacity */
