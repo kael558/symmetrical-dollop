@@ -23,9 +23,9 @@ export class Chart {
       duration: 600,
       strokeWidth: 3,
       initialZoom: 1,
-      titleTextSize: '40px',
-      centerTextSize: '25px',
-      sliceTextSize: '25px',
+      titleTextSize: '2.5vw',
+      centerTextSize: '1.5vw',
+      sliceTextSize: '1.5vw',
       splitSize: '0.5em',
        color: {
         Male: '#fc8d59',
@@ -207,10 +207,13 @@ export class Chart {
         };
 
         const textFits = d => {
-          	if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill))
+          if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill && d.parent && d.parent.parent == null)){
+		console.log(d)
               return true
+	   }
           
-            const CHAR_SPACE = 9;
+
+            const CHAR_SPACE = 20;
 
             const deltaAngle = x(d.x1) - x(d.x0);
             const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
@@ -497,11 +500,11 @@ export class Chart {
         textCircle = centerGroup
             .append('foreignObject')
             .attr('x', -innerRadius)
-            .attr('y', -innerRadius/2)
-        		.attr('dy', -1)
-        		.attr('width',  innerRadius*2)
-  					.attr('height',  innerRadius*2)
-        		.append('xhtml:p')
+            .attr('y', -innerRadius/4)
+            .attr('dy', 0)
+            .attr('width',  innerRadius*2)
+  	    .attr('height',  innerRadius*2)
+            .append('xhtml:p')
               .text(attrs.placeholderInnerText)
     					.style('font-size', attrs.centerTextSize)
     					
