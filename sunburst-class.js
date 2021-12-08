@@ -34,7 +34,7 @@ export class Sunburst {
       textCirclesCategory: [],
       textCirclesCount: [],
       textCirclesPercent: [],
-      titleTextSize: '25px',
+      titleTextSize: '40px',
       titleTextHeight: 60,
       compareMode: false,
       legendWidth: 150,
