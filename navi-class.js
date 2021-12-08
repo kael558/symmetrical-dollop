@@ -210,7 +210,7 @@ export class Chart {
           	if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill))
               return true
           
-            const CHAR_SPACE = 6;
+            const CHAR_SPACE = 8;
 
             const deltaAngle = x(d.x1) - x(d.x0);
             const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
@@ -227,6 +227,10 @@ export class Chart {
             .attr('viewBox', `${(-width+275) / 2} ${(-height-120) / 2} ${width} ${height}`)
             .on('click', () => focusOn()); // Reset zoom on canvas click
 
+
+    		document.getElementById('select-all-group').style.left = (window.innerWidth-275)/2  + "px"
+    		document.getElementById('select-all-group').style.top = (window.innerHeight+30)/2 + "px"
+    
     
 			 	let textCircle;
 
@@ -262,13 +266,9 @@ export class Chart {
         const newSlice = slice.enter()
             .append('g').attr('class', 'slice')
         		.on('mouseover', d => {
-              if (d.data.name == 'Sex'){
-              	textCircle.style('font-size', '12px')
-              }
-              
               textCircle.text(d.data.description)       
             }).on('mouseout', d => {
-               textCircle.text(attrs.placeholderInnerText).style('font-size', attrs.centerTextSize)
+               textCircle.text(attrs.placeholderInnerText)
             })
             .on('click', d => {
               	if ([...d3.event.srcElement.classList].includes('select-all-circles')){
@@ -454,7 +454,7 @@ export class Chart {
           			.append('circle')
     						.attr('class', 'select-all-circles')
     						.attr('id', d => d.data.name.split(' ').join('-') + "-circle")
-    						.attr('r', '8px')
+    						.attr('r', '15px')
     						.attr('cx', d => {
           				let radians = x(d.x0) + (x(d.x1) - x(d.x0))/2;
           				let cx =  getCircleX(radians, y(d.y1));
@@ -501,9 +501,9 @@ export class Chart {
         		.attr('dy', -1)
         		.attr('width',  innerRadius*2)
   					.attr('height',  innerRadius*2)
-            .style('font-size', attrs.centerTextSize)
         		.append('xhtml:p')
               .text(attrs.placeholderInnerText)
+    					.style('font-size', attrs.centerTextSize)
     					
     		document.getElementById('back-button-nodes').onclick = () => focusOn();
 				document.getElementById('back-button-nodes').disabled = true;

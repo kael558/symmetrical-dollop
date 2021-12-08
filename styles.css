@@ -114,14 +114,10 @@ foreignObject
 
 
 #select-all-group{
-  position: fixed;
+  position: absolute;
   text-align: center;
-  font-size:10px;
+  font-size:25px;
   color: white;
-  top: 50%;
-  left: 40.8%;
-  width: 20px;
-  height: 20px;
   z-index: 1000;
   cursor: pointer;
 }
@@ -133,6 +129,12 @@ p{
 
 li{
   font-size: 12px; 
+}
+
+h2 {
+ 	border-bottom: 2px solid black;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 #info-div{
@@ -150,6 +152,7 @@ li{
 }
 
 #info-text{
+
   position: fixed; 
   color: white;
   top: 10%;
@@ -200,11 +203,13 @@ li{
 }
 
 .welcome-and-video {
+  	  padding: 15px;
     position: relative;
     min-height: 240px;
 }
 
 .welcome {
+  	 
     width: 30%;
 }
 
@@ -218,6 +223,7 @@ iframe {
 }
 
 .about {
+   padding: 5px;
     margin-top: 20px;
 }
 
