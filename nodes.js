@@ -8,149 +8,7 @@ const UNCOLLECTED_ATTRIBUTE_NODE = 'UNCOLLECTED_ATTRIBUTE';
 const VALUE_NODE = 'VALUE';
 const UNCOLLECTED_VALUE_NODE = 'UNCOLLECTED_VALUE';
 
-export const initialNodes = {
-  Enrolled: {
-    type: REPORT_NODE,
-    description: 'The number of students that are enrolled.'
-  },
-  Faculty: {
-    parents: ['Enrolled'],
-    collectedValues: ['STEM', 'Non-STEM', 'Engineering & Design', 'Science', 'Public Affairs', 'Business', 'Arts & Social Sciences'],
-  	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Department and faculty are mapped from student degree and major or majors.'
-  },
-  'Academic Year': {
-    parents: ['Enrolled'],
-    collectedValues: ['2013/14',
-      '2014/15',
-      '2015/16',
-      '2016/17',
-      '2017/18',
-      '2018/19',
-      '2019/20',
-      '2020/21',],
-  	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Academic Year is made up of three terms (Summer, Fall, Winter).',
-    ordered: true
-  },
-  Degree: {
-    parents: ['Enrolled'],
-    collectedValues: ['Bachelors',
-      'Masters',
-      'Ph.D.'],
-  	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'Level of study of a student.',
-    ordered: true
-  },
- 
-  'Study Status': {
-    parents: ['Enrolled'],
-    collectedValues: ['Part-time',
-      'Full-time',
-      'Co-op'],
-  	uncollectedValues: [],
-    type: ACADEMIC_ATTRIBUTE_NODE,
-    description: 'A full-time student is enrolled in 3 or more credits across the Fall and Winter terms whereas a part-time student is enrolled in less.'
-  },
-  'Citizenship Status': {
-    parents: ['Enrolled'],
-    collectedValues: ['Domestic',
-      'International'],
-  	uncollectedValues: [],
-    type: EDI_ATTRIBUTE_NODE,
-    description: 'Students are categorized based on whether they are charged domestic or international fees.'
-  },
-  Age: {
-    parents: ['Enrolled'],
-    collectedValues: [
-      '<=17',
-      '18-20',
-      '21-25',
-      '26-30',
-      '31-35',
-      '36-45',
-      '46-55',
-      '55+',
-    ],
-    uncollectedValues: ['55-59','60-64','65-69', '70-74', '75-79', '80+'],
-    type: EDI_ATTRIBUTE_NODE,
-    description: 'The age ranges of students.',
-    ordered: true
-  },
-  Sex: {
-    parents: ['Enrolled'],
-    collectedValues: ['Female', 'Male'],
-  	uncollectedValues: ['Non-binary'],
-    type: EDI_ATTRIBUTE_NODE,
-    description: 'This is mislabeled by the university. The correct label should be \'Gender\' and all genders should be collected.'
-	},
-  Race: {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the race of a student.'
-	},
-  'Religion/Spirituality': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the religion/spirituality of a student.'
-  },
-  'Regional Identity': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the regional identity of a student.'
-  },
-  'Dis/ability': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the dis/ability of a student.'
-  },
-  Indigeneity: {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: ['First Nations', 'Metis', 'Inuit'],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the indigeneity of a student.'
-  },
-  'First Language': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the first language of a student.'
-  },
-  'Other Language': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the other language of a student.'
-  },
-  'Ethnicity': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the ethnicity of a student.'
-  },
-  'Nation': {
-    parents: ['Enrolled'],
-  	collectedValues: [],
-  	uncollectedValues: [],
-    type: UNCOLLECTED_ATTRIBUTE_NODE,
-    description: 'University does not collect the nation of origin of a student.'
-  },
-}
+
 
 export const colors = {
   Report_Node_Fill: {"red":31,"green":120,"blue":180,"alpha":1},
@@ -170,7 +28,149 @@ export const colors = {
   Disabled_Text: {"red":255,"green":255,"blue":255,"alpha":0.2},
 }
 
-     
+     export const initialNodes = {
+  Enrolled: {
+    type: REPORT_NODE,
+    description: 'The number of students that are enrolled.'
+  },
+  Faculty: {
+    parents: ['Enrolled'],
+    collectedValues: ['STEM', 'Non-STEM', 'Engineering & Design', 'Science', 'Public Affairs', 'Business', 'Arts & Social Sciences'],
+  	uncollectedValues: [],
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'Groups of university departments concerned with a major division of knowledge. The faculty of a student maps from their major or majors.'
+  },
+  'Academic Year': {
+    parents: ['Enrolled'],
+    collectedValues: ['2013/14',
+      '2014/15',
+      '2015/16',
+      '2016/17',
+      '2017/18',
+      '2018/19',
+      '2019/20',
+      '2020/21',],
+  	uncollectedValues: [],
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'The period of the year which students attend an educational institution. The academic year consists of three terms (Summer, Fall and Winter). The academic year of a student maps from the year that they are studying.',
+    ordered: true
+  },
+  Degree: {
+    parents: ['Enrolled'],
+    collectedValues: ['Bachelors',
+      'Masters',
+      'Ph.D.'],
+  	uncollectedValues: [],
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'The levels of qualification offered by academic instituitions. The degree of a student maps from their level of study.',
+    ordered: true
+  },
+ 
+  'Study Status': {
+    parents: ['Enrolled'],
+    collectedValues: ['Part-time',
+      'Full-time',
+      'Co-op'],
+  	uncollectedValues: [],
+    type: ACADEMIC_ATTRIBUTE_NODE,
+    description: 'The classification of the amount of courses that a student is taking. Students enrolling in 3 or more credits across the Fall and Winter are full-time students. Whereas students enrolling in less than 3 credits are part-time students.'
+  },
+  'Citizenship Status': {
+    parents: ['Enrolled'],
+    collectedValues: ['Domestic',
+      'International'],
+  	uncollectedValues: [],
+    type: EDI_ATTRIBUTE_NODE,
+    description: 'The classification of tuition fee that a student pays. The students university tuition fee amount determines their citizenship status.'
+  },
+  Age: {
+    parents: ['Enrolled'],
+    collectedValues: [
+      '<=17',
+      '18-20',
+      '21-25',
+      '26-30',
+      '31-35',
+      '36-45',
+      '46-55',
+      '55+',
+    ],
+    uncollectedValues: ['55-59','60-64','65-69', '70-74', '75-79', '80+'],
+    type: EDI_ATTRIBUTE_NODE,
+    description: 'The length of time that a student has lived. The age of a student maps to their respective age interval. The registration application records a student\'s date of birth and determines their age.',
+    ordered: true
+  },
+  Sex: {
+    parents: ['Enrolled'],
+    collectedValues: ['Female', 'Male'],
+  	uncollectedValues: ['Non-binary'],
+    type: EDI_ATTRIBUTE_NODE,
+    description: 'The physical differences between students based on anatomical and physiological characteristics. The registration application records a student\'s sex (labelled as gender on the application). A student may file a form to request a \"Gender Change Assignment\" to change this field. This field contains a mixture of gender and sex. A growing population of students choose not to disclose their gender/sex with a \'Prefer not to report\' option. We are unsure how this maps to the two available categories of \'male\' and \'female\'.'
+	},
+  Race: {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+	},
+  'Religion/Spirituality': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+  'Regional Identity': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+  'Dis/ability': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+  Indigeneity: {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: ['First Nations', 'Metis', 'Inuit'],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect the indigeneity of a student.'
+  },
+  'First Language': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+  'Other Language': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+  'Ethnicity': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+  'Nation': {
+    parents: ['Enrolled'],
+  	collectedValues: [],
+  	uncollectedValues: [],
+    type: UNCOLLECTED_ATTRIBUTE_NODE,
+    description: 'University does not collect this category of information.'
+  },
+}
 
 
 export const nodes = {
@@ -181,7 +181,7 @@ export const nodes = {
             {
              "name": "Faculty",
              "color": colors.Academic_Node_Fill,
-             description: 'Department and faculty are mapped from student degree and major or majors.',
+            	description: 'Groups of university departments concerned with a major division of knowledge. The faculty of a student maps from their major or majors.',
              "children": [
                 {"name": "STEM", "size": 12},
                 {"name": "Non-STEM", "size": 12},
@@ -195,7 +195,7 @@ export const nodes = {
             {
              "name": "Academic Year",
              "color": colors.Academic_Node_Fill,
-              description: 'Academic Year is made up of three terms (Summer, Fall, Winter).',
+              description: 'The period of the year which students attend an educational institution. The academic year consists of three terms (Summer, Fall and Winter). The academic year of a student maps from the year that they are studying.',
              "children": [
                 {"name": "2013/14", "size": 10.5},
                 {"name": "2014/15", "size": 10.5},
@@ -210,7 +210,7 @@ export const nodes = {
 						{
              "name": "Degree",
              "color": colors.Academic_Node_Fill,
-              description: 'Level of study of a student.',
+              description: 'The levels of qualification offered by academic instituitions. The degree of a student maps from their level of study.',
              "children": [
                 {"name": "Bachelors", "size": 28},
                 {"name": "Masters", "size": 28},
@@ -220,8 +220,8 @@ export const nodes = {
             {
              "name": "Study Status",
              "color": colors.Academic_Node_Fill,
-              description: 'A full-time student is enrolled in 3 or more credits across the Fall and Winter terms whereas a part-time student is enrolled in less.',
-             "children": [
+              description: 'The classification of the amount of courses that a student is taking. Students enrolling in 3 or more credits across the Fall and Winter are full-time students. Whereas students enrolling in less than 3 credits are part-time students.',
+              "children": [
                 {"name": "Part-time", "size": 42},
                 {"name": "Full-time", "size": 42},
              ]  
@@ -229,7 +229,7 @@ export const nodes = {
             {
              "name": "Citizenship Status",
              "color": colors.Diversity_Node_Fill,
-             description: 'Students are categorized based on whether they are charged domestic or international fees.',
+             description: 'The classification of tuition fee that a student pays. The students university tuition fee amount determines their citizenship status.',
              "children": [
                 {"name": "Domestic", "size": 42},
                 {"name": "International", "size": 42},
@@ -238,8 +238,7 @@ export const nodes = {
             {
              "name": "Age",
              "color": colors.Diversity_Node_Fill,
-              description: 'The age ranges of students.',
-
+              description: 'The length of time that a student has lived. The age of a student maps to their respective age interval. The registration application records a student\'s date of birth and determines their age.',
              "children": [
                 {"name": "<=17", "size": 6},
                 {"name": "18-20", "size": 6},
@@ -260,8 +259,8 @@ export const nodes = {
             {
              "name": "Sex",
              "color": colors.Diversity_Node_Fill,
-              description: 'This is mislabeled by the university. Ideally, the label should be \'Gender\' and more genders should be collected.',
-             "children": [
+              description: 'The physical differences between students based on anatomical and physiological characteristics. The registration application records a student\'s sex (labelled as gender on the application). A student may file a form to request a \"Gender Change Assignment\" to change this field. This field contains a mixture of gender and sex. A growing population of students choose not to disclose their gender/sex with a \'Prefer not to report\' option. We are uncertain how this maps to the two available categories of \'male\' and \'female\'.',
+              "children": [
                 {"name": "Male", "size": 28},
                 {"name": "Female", "size": 28},
                 {"name": "Non-binary", "color":colors.Uncollected_Node_Fill, "size": 28}
@@ -270,43 +269,43 @@ export const nodes = {
             {
              "name": "Race",
              "color":colors.Uncollected_Node_Fill,
-              description: 'University does not collect the race of a student.',
+              description: 'University does not collect this category of information.',
              "size": 84
             },
             {
              "name": "Religion/Spirituality",
              "color":colors.Uncollected_Node_Fill,
-              description: 'University does not collect the religion/spirituality of a student.',
+              description: 'University does not collect this category of information.',
               "size":  84
             },
             {
              "name": "Dis/ability",
              "color": colors.Uncollected_Node_Fill,
-              description: 'University does not collect the dis/ability of a student.',
+              description: 'University does not collect this category of information.',
               "size":  84
             },
             {
              "name": "Indigeneity",
              "color": colors.Uncollected_Node_Fill,
-               description: 'University does not collect the indigeneity of a student.',
+               description: 'University does not collect this category of information.',
               "size":  84
             },
             {
              "name": "Languages Spoken",
              "color": colors.Uncollected_Node_Fill,
-              description: 'University does not collect the languages spoken by a student.',
+              description: 'University does not collect this category of information.',
               "size":  84
             },
             {
              "name": "Ethnicity",
              "color": colors.Uncollected_Node_Fill,
-              description: 'University does not collect the other language of a student.',
+              description: 'University does not collect this category of information.',
               "size":  84
             },
             {
              "name": "Nation/Regional Identity",
              "color": colors.Uncollected_Node_Fill,
-              description: 'University does not collect the nation of origin or regional identity of a student.',
+              description: 'University does not collect this category of information.',
               "size":  84
             },
            ]

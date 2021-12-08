@@ -2,6 +2,7 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: sans-serif;
+  padding: 0;
 }
 
 .legend{
@@ -18,14 +19,22 @@ body {
   height: 100%;
 }
 
+
+
+#center-group-nodes {
+	position: fixed;
+}
+
 foreignObject
 {
+		color: white; 
     text-align: center;
     padding: 0 20px;
     margin: 20px;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
+  	pointer-events: none;
 }
 
 #sunburst-container{
@@ -101,42 +110,34 @@ foreignObject
 
 
 
-#select-all-button{
+
+
+
+#select-all-group{
   position: fixed;
-  font-size:50px;
+  text-align: center;
+  font-size:10px;
   color: white;
-  top: 52%;
-  left: 40%;
+  top: 50%;
+  left: 40.8%;
   width: 20px;
   height: 20px;
   z-index: 1000;
   cursor: pointer;
 }
 
-#info-open-button{
-  position: fixed;
-  font-size:36px;
-  color: white;
-  top: 8px;
-  left: 145px;
-  width: 20px;
-  height: 20px;
-  z-index: 1000;
-  cursor: pointer;
+
+p{
+ font-size: 12px;
 }
 
-#node-legend{
-   top: 70px;
+li{
+  font-size: 12px; 
 }
-
-#sunburst-legend{
-  top: 70px;
-}
-
 
 #info-div{
   position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
+  display: block; /* Hidden by default */
   width: 100%; /* Full width (cover the whole page) */
   height: 100%; /* Full height (cover the whole page) */
   top: 0;
@@ -151,35 +152,97 @@ foreignObject
 #info-text{
   position: fixed; 
   color: white;
-  top: 20%;
+  top: 5%;
   left: 15%;
   max-width: 70%;
   background-color: #708090; /* Black background with opacity */
   z-index: 1000;
-  text-align: center;
   padding: 10px;
   font: 18px sans-serif;
   border-radius: 20px;
   box-shadow: 2px 3px black;
 }
 
-#info-close-button{
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1001;
+#info-open-button{
+  position: fixed;
+  font-size:36px;
   color: white;
+  top: 8px;
+  left: 145px;
+  width: 20px;
+  height: 20px;
+  z-index: 1000;
+  cursor: pointer;
 }
 
-.fa-check-square-o{
-  z-index: 600;
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: white;
+#info-close-button {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    box-shadow: 0 0 2px #fff;
+    border-radius: 50%;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    font-weight: 400;
+    font-size: 19.2px;
+    line-height: 19.2px;
+    text-decoration: none;
+    text-align: center;
+    background-color: #0096d3;
 }
 
 
+
+.info-div {
+    position: relative;
+    margin: 20px;
+}
+
+.welcome-and-video {
+    position: relative;
+    min-height: 240px;
+}
+
+.welcome {
+    width: 30%;
+}
+
+iframe {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 0;
+    width: 65%;
+    height: 100%;
+}
+
+.about {
+    margin-top: 20px;
+}
+
+.section {
+    float: left;
+    width: 30%;
+}
+
+.section.second {
+    margin-left: 5%;
+    width: 20%;
+}
+.section.third {
+    float: right;
+    width: 40%;
+}
+
+
+#node-legend{
+   top: 70px;
+}
+
+#sunburst-legend{
+  top: 70px;
+}
 
 #visualize-button {
 	position: absolute;

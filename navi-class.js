@@ -24,6 +24,9 @@ export class Chart {
       strokeWidth: 3,
       initialZoom: 1,
       titleTextSize: '25px',
+      centerTextSize: '15px',
+      sliceTextSize: '12px',
+      splitSize: '0.5em',
        color: {
         Male: '#fc8d59',
         Female: '#91bfdb',
@@ -81,6 +84,7 @@ export class Chart {
     			.style('font-size', attrs.titleTextSize)
     			.text('Carleton University Students Collected \& Missing Demographics Data');
     
+  
 		this.renderLegend();
     this.renderSelectedAttributes()
     //this.initializeEnterExitUpdatePattern();
@@ -177,7 +181,7 @@ export class Chart {
             .range([0, 2 * Math.PI])
             .clamp(true);
 
-        const y = d3.scaleSqrt()
+        const y = d3.scaleLinear()
             .range([maxRadius*.1, maxRadius]);
 
         const partition = d3.partition();
@@ -203,7 +207,10 @@ export class Chart {
         };
 
         const textFits = d => {
-            const CHAR_SPACE = 3;
+          	if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill))
+              return true
+          
+            const CHAR_SPACE = 6;
 
             const deltaAngle = x(d.x1) - x(d.x0);
             const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
@@ -220,51 +227,56 @@ export class Chart {
             .attr('viewBox', `${(-width+275) / 2} ${(-height-120) / 2} ${width} ${height}`)
             .on('click', () => focusOn()); // Reset zoom on canvas click
 
-			 let innerRadius = y(0.3333333) 
-       let centerGroup = svg
-            .append('g')
-           .attr('id', 'center-group-nodes')
-
-        centerGroup.append('circle')
-            .attr('id', 'center-circle-nodes')
-            .attr('cx', 0)
-            .attr('cy', 0)
-            .attr('r', innerRadius)
-            .attr('stroke', 'black')
-            .style('stroke-width',0)
-            .attr('fill', 'white');
-        
-        let textCircle = centerGroup
-            .append('foreignObject')
-            .attr('x', -innerRadius)
-            .attr('y', -innerRadius/3)
-        		.attr('dy', -0.5)
-        		.attr('width',  innerRadius*2)
-  					.attr('height',  innerRadius*2)
-            .style('font-size', "60px")
-        		.append('xhtml:p')
-              .text(attrs.placeholderInnerText)
-
+    
+			 	let textCircle;
 
     		let root = nodes
         root = d3.hierarchy(root);
         root.sum(d => d.size);
 
-        const slice = svg.selectAll('g.slice')
-            .data(partition(root).descendants());
+    		root.descendants().map(d =>{
+            let selected = false;
+            let split = d.data.name.includes(" ") || d.data.name.includes("/");
+            return Object.assign(d, {
+              selected,
+              split
+            });
+          });
+    		
+    		const sortedNodes = partition(root).descendants().sort((d1, d2) => {
+        	 if (d1.children && !d2.children){
+            	return 1; 
+           } 
+           if (!d1.children && d2.children){
+            	return -1; 
+           }
+          	return 0;
+        })
 
+        const slice = svg.selectAll('g.slice')
+            .data(sortedNodes);
+			
         slice.exit().remove();
 
+				/* GET/SET SLICES */
         const newSlice = slice.enter()
             .append('g').attr('class', 'slice')
         		.on('mouseover', d => {
+              if (d.data.name == 'Sex'){
+              	textCircle.style('font-size', '12px')
+              }
+              
               textCircle.text(d.data.description)       
             }).on('mouseout', d => {
-               textCircle.text(attrs.placeholderInnerText)
+               textCircle.text(attrs.placeholderInnerText).style('font-size', attrs.centerTextSize)
             })
             .on('click', d => {
+              	if ([...d3.event.srcElement.classList].includes('select-all-circles')){
+                  return;
+                }
+    
                 d3.event.stopPropagation();
-              	 
+              		console.log("clciked arc");
               	if (d.children){
                   focusOn(d);
                 } else {
@@ -274,64 +286,133 @@ export class Chart {
             });
 
 
-
         newSlice.append('path')
             .attr('class', 'main-arc')
             .style('fill',  d => this.rgbaObjToColor(d.data.color || d.parent.data.color))
      				.style('stroke', 'white')
-            .style('stroke-width', d=> d.data.borderWidth || attrs.unclickedWidth)
+            .style('stroke-width', (d) => d.data.name == '' ? '0px' : attrs.unclickedWidth)
             .attr('d', arc);
 
-    		
+    	
     		newSlice.append('path')
                 .attr('class', 'hidden-arc')
                 .attr('id', (_, i) => `hiddenArc${i}`)
                 .attr('d', middleArcLine);
 				
-        const text = newSlice.append('text')
-        			.attr('class', 'arc-text')
-        			.style('font-size', "30px")
-            			.attr('display', d => textFits(d) ? null : 'none');
+ 
+    		/* APPEND TEXT */
+        const text = newSlice
+          .append('text')
+          .attr('class', 'arc-text')
+          .style('font-size', attrs.sliceTextSize)
+          .attr('display', (d) => {
+            if (d.parent && d.parent.parent == null)
+                return null
+            return textFits(d) ? null : 'none'
+          }).attr('dy', (d) => {
+            if (d.split){
+             return (d.inverted ? "-" : "+") + attrs.splitSize;
+            } 
+            return "0em"
+          });
 
-        // Add white contour
-        text.append('textPath')
-            .attr('startOffset','50%')
-            .attr('xlink:href', (_, i) => `#hiddenArc${i}` )
-            .style('fill', 'none')
-            .style('stroke-linejoin', 'round');
-
-        text.append('textPath')
-            .attr('startOffset','50%')
-            .attr('xlink:href', (_, i) => `#hiddenArc${i}` )
-            .text(d => d.data.name);
-
-				
-    		document.getElementById('select-all-button').onclick = selectAll;
-    		function selectAll(){
-          	for (let child of attrs.focussed.children){
-              select(child);
+        text
+          .append('textPath')
+          .attr('startOffset', '50%')
+          .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
+          .text((d) => {
+            if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill)){
+              if (d.data.name.includes("/")){
+                return d.data.name.split("/")[d.inverted ? 0 : 1]
+              } else {
+                 return d.data.name.split(" ")[d.inverted ? 0 : 1]
+              }
             }
-        }
+            return d.data.name
+          });
+
+            const text1 = newSlice
+              .append('text')
+              .attr('class', 'arc-text1')
+              .style('font-size', attrs.sliceTextSize)
+              .attr('dy', (d) => {
+                  if (d.split){
+                    return (d.inverted ? "+" : "-") +attrs.splitSize;
+                  } 
+                return "0em"
+              });
+
+            text1
+              .append('textPath')
+              .attr('startOffset', '50%')
+              .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
+              .text((d) => {
+                if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill)){
+                  if (d.data.name.includes("/")){
+                    return d.data.name.split("/")[d.inverted ? 1 : 0]
+                  } else {
+                     return d.data.name.split(" ")[d.inverted ? 1 : 0]
+                  }
+                }
+                return ""
+              });
+				
+
+
+
+    
+    		/* HANDLE SELECT ALL */
+    		document.getElementById('select-all-button').onclick = selectAll;
+    		function selectAll() {
+            const allSelected = attrs.focussed.children.every(d => d.selected || d.data.color == colors.Uncollected_Node_Fill)
+            for (let child of attrs.focussed.children) {
+              if (allSelected){
+                select(child);  
+              } else{
+                if (!child.selected){
+                  select(child);
+                }
+              }
+            }
+          }
     		
     		function select(d){
           		if (d.data.color == colors.Uncollected_Node_Fill) 
                 return;
+          		
+          		d.selected = !d.selected
+          		if (d.selected == false){
+                document.getElementById('select-all-button').checked = false
+                svg.select("#" + d.parent.data.name.split(' ').join('-') + "-circle").attr('fill', nc.rgbaObjToColor(colors.White))
+              } else {
+               	if (attrs.focussed){
+                   const allSelected = attrs.focussed.children.every(d => d.selected || d.data.color == colors.Uncollected_Node_Fill)
+                   if (allSelected){
+                    	document.getElementById('select-all-button').checked = true
+                     	svg.select( "#" + d.parent.data.name.split(' ').join('-') + "-circle").attr('fill', nc.rgbaObjToColor(colors.Blue))
+                   }
+                } else {
+                   const allSelected = d.parent.children.every(d => d.selected || d.data.color == colors.Uncollected_Node_Fill)
+                   if (allSelected){
+                    	document.getElementById('select-all-button').checked = true
+                     	svg.select( "#" + d.parent.data.name.split(' ').join('-') + "-circle").attr('fill', nc.rgbaObjToColor(colors.Blue))
+                   }
+                }
+              }
+          		
           
                   const parent = d.parent.data
                   if (attrs.diversityValues[parent.name]) {
                     const index = attrs.diversityValues[parent.name].indexOf(d.data.name);
                     if (index > -1) {
                         attrs.diversityValues[parent.name].splice(index, 1);
-                      	d.data.borderWidth = attrs.unclickedWidth;
                     } else {
                         attrs.diversityValues[parent.name].push(d.data.name);
-                        d.data.borderWidth = attrs.clickedWidth;
                     }
                   } else if (attrs.academicValues[parent.name]) {
                     const index = attrs.academicValues[parent.name].indexOf(d.data.name);
                     if (index > -1) {
                         attrs.academicValues[parent.name].splice(index, 1);
-                        d.data.borderWidth = attrs.unclickedWidth;
 
                         if (attrs.academicValues[parent.name].length == 0) {//if empty
                           attrs.academicValues[parent.name].push('Total');
@@ -344,7 +425,6 @@ export class Chart {
                         }
 
                         attrs.academicValues[parent.name].push(d.data.name);
-                        d.data.borderWidth = attrs.clickedWidth;
 
                          let total = 1;
                           for (const attr in attrs.academicValues) {
@@ -358,34 +438,104 @@ export class Chart {
                     }
                	 }
                   
-                d3.selectAll('path.main-arc')
-                  .style('stroke-width', d=> d.data.borderWidth || attrs.unclickedWidth); 
+                d3.selectAll('path.main-arc').style('opacity',(d) => d.selected ? 0.5 : 1.0);
         }
+
+    
+    		    		/* APPEND SELECT ALL CIRCLES */
+    		//Helper methods
+        const getCircleX = (radians, radius) =>
+          Math.sin(radians) * radius;
+    		const getCircleY = (radians, radius) =>
+      		Math.cos(radians) * radius;
+    
+    		const attributeSlices = newSlice.filter((d) => d.parent && d.parent.parent == null && d.children!=null);
+    		attributeSlices
+          			.append('circle')
+    						.attr('class', 'select-all-circles')
+    						.attr('id', d => d.data.name.split(' ').join('-') + "-circle")
+    						.attr('r', '8px')
+    						.attr('cx', d => {
+          				let radians = x(d.x0) + (x(d.x1) - x(d.x0))/2;
+          				let cx =  getCircleX(radians, y(d.y1));
+          				return cx;
+        				})
+    						.attr('cy', d => {
+
+          					let radians = x(d.x0) + (x(d.x1) - x(d.x0))/2;
+          					let cy =  -getCircleY(radians, y(d.y1));
+          					return cy;
+        				})
+    						.attr('stroke', 'white')
+    						.style('stroke-width',1)
+    						.attr('fill', this.rgbaObjToColor(colors.White))
+    						.on('click', d => {
+          							console.log("clciked select all");
+          							attrs.focussed = d;
+          							selectAll();
+          							attrs.focussed = null;
+                      	this.renderSelectedAttributes()
+                  });
     
     
-    
+    	
+    		/* CREATE CENTER CIRCLE */
+       let innerRadius = y(0.3333333) 
+       let centerGroup = svg
+            .append('g')
+           .attr('id', 'center-group-nodes')
+
+        centerGroup.append('circle')
+            .attr('id', 'center-circle-nodes')
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', innerRadius)
+            .attr('stroke', 'black')
+            .style('stroke-width',0)
+            .attr('fill', this.rgbaObjToColor(colors.Slate_Grey));
+        
+        textCircle = centerGroup
+            .append('foreignObject')
+            .attr('x', -innerRadius)
+            .attr('y', -innerRadius/2)
+        		.attr('dy', -1)
+        		.attr('width',  innerRadius*2)
+  					.attr('height',  innerRadius*2)
+            .style('font-size', attrs.centerTextSize)
+        		.append('xhtml:p')
+              .text(attrs.placeholderInnerText)
+    					
     		document.getElementById('back-button-nodes').onclick = () => focusOn();
-    		focusOn()
-    
-    
+				document.getElementById('back-button-nodes').disabled = true;
+         document.getElementById('back-button-nodes').style.backgroundColor = nc.rgbaObjToColor(colors.Disabled);
+         document.getElementById('back-button-nodes').style.color = nc.rgbaObjToColor(colors.Disabled_Text);
+         document.getElementById('center-group-nodes').style.display= 'block';
+         document.getElementById('select-all-group').style.display= 'none';
+
         function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
             // Reset to top-level if no data point specified
 
           	if (d.x0==0 && d.x1==1 && d.y0 == 0 && d.y1==1){
+              attrs.focussed = null;
               document.getElementById('back-button-nodes').disabled = true;
                document.getElementById('back-button-nodes').style.backgroundColor = nc.rgbaObjToColor(colors.Disabled);
        				 document.getElementById('back-button-nodes').style.color = nc.rgbaObjToColor(colors.Disabled_Text);
-              document.getElementById('center-group-nodes').style.display= 'block';
-               document.getElementById('select-all-button').style.display= 'none';
+               document.getElementById('center-group-nodes').style.display= 'block';
+               document.getElementById('select-all-group').style.display= 'none';
+               for (const elem of document.getElementsByClassName('select-all-circles')){
+               	elem.style.display= 'block';
+              }
             } else {
               attrs.focussed = d;
                 document.getElementById('back-button-nodes').disabled = false;
               	document.getElementById('back-button-nodes').style.backgroundColor = nc.rgbaObjToColor(colors.Button);
               	document.getElementById('back-button-nodes').style.color ='white';
-              document.getElementById('center-group-nodes').style.display= 'none';
-              document.getElementById('select-all-button').style.display= 'block';
+                document.getElementById('center-group-nodes').style.display= 'none';
+                document.getElementById('select-all-group').style.display= 'block';
+              	for (const elem of document.getElementsByClassName('select-all-circles')){
+               		elem.style.display= 'none';
+              	}
             }
-
 
             const transition = svg.transition()
                 .duration(750)
@@ -395,6 +545,28 @@ export class Chart {
                     return t => { x.domain(xd(t)); y.domain(yd(t)); };
                 });
 
+          	if (attrs.focussed){
+              	let center = transition.selectAll('g.slice')
+          					.filter((n) => n.data.name == d.data.name)
+                center.select('path.main-arc')
+                  .style('fill', nc.rgbaObjToColor(colors.Slate_Grey))
+            			.style('stroke-width', '0px')
+              	center.select('.arc-text')
+              		.attr('fill',  nc.rgbaObjToColor(colors.White))
+              	center.select('.arc-text1')
+              		.attr('fill',  nc.rgbaObjToColor(colors.White))
+            } else {
+              let slices = transition.selectAll('g.slice')
+                slices.select('path.main-arc')
+                  .style('fill',  n => nc.rgbaObjToColor(n.data.color || n.parent.data.color))
+              		.style('stroke-width', (d) => d.data.name == '' ? '0px' : attrs.unclickedWidth)
+              	slices.select('.arc-text')
+              		.attr('fill',  nc.rgbaObjToColor(colors.Black))
+              	slices.select('.arc-text1')
+              		.attr('fill',  nc.rgbaObjToColor(colors.Black))
+            }
+          	
+          
             transition.selectAll('path.main-arc')
                 .attrTween('d', d => () => arc(d));
 
@@ -402,6 +574,9 @@ export class Chart {
                 .attrTween('d', d => () => middleArcLine(d));
 
             transition.selectAll('.arc-text')
+                .attrTween('display', d => () => textFits(d) ? null : 'none');
+         		
+          	transition.selectAll('.arc-text1')
                 .attrTween('display', d => () => textFits(d) ? null : 'none');
 
             moveStackToFront(d);
@@ -414,6 +589,8 @@ export class Chart {
                     })
             }
         }
+    
+  
     
 
 

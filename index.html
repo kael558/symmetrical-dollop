@@ -3,32 +3,59 @@
   <head>
     <title>Visualization</title>
     <link rel="stylesheet" href="styles.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/d3@5.15.1/dist/d3.min.js"></script>
   </head>
   <body>
     <div id="node-div">
       <svg id="chart-container"></svg>
-      <svg class="legend" id="node-legend" width=200 height=120></svg>
-      <svg id="selected-attributes" width=200 height=1000></svg>
-      <button type="button" id="visualize-button">Visualize<i class="fa fa-arrow-right"></i></button>
-      <button type="button" id="back-button-nodes" class = "back-button"><i class="fa fa-arrow-left "></i>Back</button>
+      <svg
+        class="legend"
+        id="node-legend"
+        width="200"
+        height="120"
+      ></svg>
+      <svg
+        id="selected-attributes"
+        width="200"
+        height="1000"
+      ></svg>
+      <button type="button" id="visualize-button">
+        Visualize<i class="fa fa-arrow-right"></i>
+      </button>
+      <button
+        type="button"
+        id="back-button-nodes"
+        class="back-button"
+      >
+        <i class="fa fa-arrow-left"></i>Back
+      </button>
       <i class="fa" id="info-open-button">&#xf05a;</i>
-      <i class="fa" id="select-all-button">&#xf058;</i>
-      
+
+      <label id="select-all-group">
+        Select All
+        <input type="checkbox" id="select-all-button" />
+      </label>
+
       <text id="nav-title-text" class="title-text"></text>
+       
     </div>
- 
-   
-    <div id="viz-div" style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-        ">
-       <svg
-      	id="sunburst-container"
+
+    <div
+      id="viz-div"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      "
+    >
+      <svg
+        id="sunburst-container"
         class="sunburst-container"
         style="
           position: fixed;
@@ -38,18 +65,84 @@
           height: 100%;
         "
       ></svg>
-      <svg class="legend" id="sunburst-legend" width=150 height=1200></svg>
-      <button type="button" id="back-button" class = "back-button"><i class="fa fa-arrow-left "></i>Back</button>
-      <button type="button" id="compare-button">Compare</button>
+      <svg
+        class="legend"
+        id="sunburst-legend"
+        width="150"
+        height="1200"
+      ></svg>
+      <button
+        type="button"
+        id="back-button"
+        class="back-button"
+      >
+        <i class="fa fa-arrow-left"></i>Back
+      </button>
+      <button type="button" id="compare-button">
+        Compare
+      </button>
       <text id="viz-title-text" class="title-text"></text>
     </div>
-		<div id="info-div">
-      <div id="info-text">
-        We present an interactive data visualization design representing student demographics and academic information. Our goal is to demonstrate the relationships between the diversity-related attributes collected as part of demographics information and the academic attributes. We first collected university student data from our local university. In collaboration with a researcher studying the impact of diversity, equity and inclusion, we chose relevant data attributes from our dataset. Next, we sketched as many designs as we found relevant representing our dataset and shared them with our collaborator. As a group, we selected the designs that we saw value in implementing. Lastly, we developed an interactive data visualization on the web. With our design, we draw attention to the lack of demographics data collected that describe student diversity. By showcasing the potential missing demographic data attributes, we hope to raise awareness about the importance of collecting this data in universities.
-         <i class="fa fa-times-circle fa-2x" id="info-close-button"></i>
+   	<div id="info-div">
+ 
+  <div id="info-text">
+    	 <i class="fa fa-times-circle fa-2x" id="info-close-button"></i>
+      <div class = "welcome-and-video">
+			<iframe id="tutorial-video" src="https://www.youtube-nocookie.com/embed/FNUT-KwKd58?fs=1&amp;autohide=1&amp;modestbranding=1&amp;rel=0&amp;showinfo=0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+            <div class="welcome">
+            		<h2> Introduction </h2>
+      	<p> This tool lets you create visualizations of diversity for research, teaching and storytelling. </p> 
+        <p> Our goals for designing and developing this visualization are to: </p>
+        <ul>
+          <li>Increase awareness of diversity in the university for students</li>
+          <li>Help policymakers make data-driven decisions</li>
+          <li>Motivate other researchers and designers to develop innovative visualizations of diversity</li>
+        </ul> 
+            
+            </div>
+            
       </div>
-       
-    </div>
+      		
+      <div class = "about">
+			 <div class = "first section">
+             	<h2> Data Source </h2>
+                <p> The source of our data is the Carleton Original Data Cubes (CODC). The CODC obtains the data from the Banner Enterprise Resource Planning (ERP) System. ERP is the primary system of record for Carleton University. ERP provides Carleton’s faculty and staff with access to financial, human resources and student information. The Institutional Research & Planning (OIRP) team maintains the ERP system. </p>
+
+<p>
+The CODC contains information about the demographics of students. Demographic categories include student counts by sex, age, citizenship status, degrees, departments, academic years, and study status. </p>
+<p>
+In May 2021, we downloaded the Fall term student demographics data from the CODC.</p>
+
+<p>
+In August 2021, the OIRP team removed the CODC for to fix bugs and to introduce other reporting tools.</p>
+<p>
+Due to the removal of the CODC, this visualization uses the downloaded data of Fall term student demographics from 2013 to 2021. </p>
+             </div>
+             <div class = "second section">
+             	<h2> Design Choices </h2>
+                <h3> Landing Page </h3>
+                <p> The landing page features a sunburst design. The design shows the hierarchical nature of the data and the proportion of uncollected to collected data.</p>
+			  <h3> Main Visualization Page </h3>
+			  <p> 
+After clicking the "Visualize" button, the page will display a multi-ring diagram. The design allows for any combinations of attributes and a simple comparison between demographics. </p>
+             </div>
+             <div class = "third section">
+             	<h2> Credits </h2>
+                <h3> Developer: Rahel Gunaratne </h3>
+                <p> Rahel is a 4th-year student pursuing a degree in Software Engineering with minors in Physics and Computer Science. He is interested in machine learning, web development and data visualization. </p> 
+				
+                <h3> Supervisor: Dr. Fateme Rajabiyazdi </h3>
+				<p> Dr. Rajabiyazdi is an Assistant Professor at the Department of Systems and Computer Engineering at Carleton University. Her research focuses on designing, developing, and evaluating interactive data visualization systems. </p> 
+
+				<h3>EDI Consultant: Dr. Gananatha Subrahmanyam </h3>
+				<p> 
+Dr. Subrahmanyam is a researcher in the social sciences at the University of Ottawa with more than ten years of experience in the field of diversity studies in the Canadian and international contexts. He also has a previous background in government advertising and public opinion research.  </p> 
+
+             </div>
+      </div>
+  </div>
+</div>
+
     <script src="bundle.js"></script>
   </body>
-</html>
+</htm
