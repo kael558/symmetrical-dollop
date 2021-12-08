@@ -210,7 +210,7 @@ export class Chart {
           	if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill))
               return true
           
-            const CHAR_SPACE = 8;
+            const CHAR_SPACE = 9;
 
             const deltaAngle = x(d.x1) - x(d.x0);
             const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
