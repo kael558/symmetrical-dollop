@@ -26,7 +26,7 @@
 8. Select the source to be the 'master' branch and click save.
 9. A link should appear to your new github page.
 
-### Design Document
+### Design Rationale Document
 #### Sunburst diagram design
 - Diagram choice -  Captures hierarchical nature of data. Displays proportions of uncollected vs collected. 
 - STEM vs non-STEM option- 
