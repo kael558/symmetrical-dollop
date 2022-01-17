@@ -1,9 +1,9 @@
-import { Chart } from './navi-class';
-import { Sunburst } from './sunburst-class';
+import { Sunburst } from './navi-class';
+import { RingDiagram } from './ring-diagram';
 
 document.addEventListener('DOMContentLoaded', (event) => {
-	//sunburst 
-  let sb; 
+	//Ring diagram object
+  let rd; 
 
 	//Set node and Main viz SPA ups
   displayNodes();
@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
               'Citizenship Status': ['International', 'Domestic']
        }
 
-    	if (sb){
-         let diversityValues = test?diversityValuesTest: ht.diversityValues();
-         let academicValues = test?academicValuesTest: ht.academicValues();
+    	if (rd){
+         let diversityValues = test?diversityValuesTest: sb.diversityValues();
+         let academicValues = test?academicValuesTest: sb.academicValues();
 
          let valid = false;
 
@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
          } else {
            	 document.getElementById('node-div').style.display = 'none';
 						 document.getElementById('viz-div').style.display = 'block';
-      	 		 //sb.render(academicValues, diversityValues);
-           	sb.initialRender(academicValues, diversityValues);
+      	 		 //rd.render(academicValues, diversityValues); //For ring-diagram1.js
+           	 rd.initialRender(academicValues, diversityValues);
          }
       } else {
          alert('Please wait for the data to finish loading');
@@ -68,18 +68,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
      document.getElementById('info-div').style.display = 'none';
   }
   
-  let ht = new Chart()
+  let sb = new Sunburst()
      .container('#chart-container')
      .svgWidth(window.innerWidth-200)
      .svgHeight(window.innerWidth)
      .initialZoom(0.3)
      .render()
 
-  new Sunburst()
+  new RingDiagram()
          .container('#sunburst-container')
   			 .displayNodes(displayNodes)
     		 .setup('https://gist.githubusercontent.com/kael558/7d2cb5258921119df5884cc90902e84d/raw/00827b9d532883343191f6144d41d0a0bbad5df8/fall.csv')
-				 .then(value => sb = value);
+				 .then(value => rd = value);
 });
 
 

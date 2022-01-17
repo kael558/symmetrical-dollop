@@ -1,6 +1,6 @@
 import { nodes, colors } from './nodes';
 
-export class Chart {
+export class Sunburst {
   constructor() {
     // Exposed variables
     const attrs = {
@@ -207,13 +207,10 @@ export class Chart {
         };
 
         const textFits = d => {
-          if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill && d.parent && d.parent.parent == null)){
-		console.log(d)
+          	if (d.split && (d.children!=null || d.data.color == colors.Uncollected_Node_Fill))
               return true
-	   }
           
-
-            const CHAR_SPACE = 20;
+            const CHAR_SPACE = 8;
 
             const deltaAngle = x(d.x1) - x(d.x0);
             const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
@@ -501,10 +498,9 @@ export class Chart {
             .append('foreignObject')
             .attr('x', -innerRadius)
             .attr('y', -innerRadius/4)
-            .attr('dy', 0)
-            .attr('width',  innerRadius*2)
-  	    .attr('height',  innerRadius*2)
-            .append('xhtml:p')
+        		.attr('width',  innerRadius*2)
+  					.attr('height',  innerRadius*2)
+        		.append('xhtml:p')
               .text(attrs.placeholderInnerText)
     					.style('font-size', attrs.centerTextSize)
     					

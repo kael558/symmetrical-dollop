@@ -1,6 +1,6 @@
 import { colors } from './nodes';
 
-export class Sunburst {
+export class RingDiagram {
   constructor() {
     //Exposed variables
     const attrs = {
@@ -11,7 +11,7 @@ export class Sunburst {
       data: null,
       extendedLineLength: 40,
       textDistance: 25,
-      outerTextSize: '20px',
+      outerTextSize: '25px',
       attributeIndex: null,
       history: [],
       displayNodes: null,
@@ -34,7 +34,7 @@ export class Sunburst {
       textCirclesCategory: [],
       textCirclesCount: [],
       textCirclesPercent: [],
-      titleTextSize: '2.5vw',
+      titleTextSize: '1.5vw',
       titleTextHeight: 60,
       compareMode: false,
       legendWidth: 150,

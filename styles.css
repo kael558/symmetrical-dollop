@@ -95,6 +95,7 @@ foreignObject
   text-align: center;
   padding: 10px;
   z-index: 500;
+  font: 25px sans-serif;
   color: white;
 }
 
@@ -124,7 +125,6 @@ foreignObject
 
 p{
  font-size: 12px;
- margin-top: 0px;
 }
 
 li{
@@ -132,17 +132,9 @@ li{
 }
 
 h2 {
-  border-bottom: 2px solid black;
+ 	border-bottom: 2px solid black;
   padding-bottom: 0px;
-  margin-bottom: 10px;
-}
-
-h3 {
-  margin: 0px;
-}
-
-h4 {
-  margin: 0px;
+  margin-bottom: 0px;
 }
 
 #info-div{
@@ -210,6 +202,11 @@ h4 {
     margin: 20px;
 }
 
+h4 {
+  margin: 0px;
+  margin-top: 5px;
+}
+
 .welcome-and-video {
   	  padding: 15px;
     position: relative;
@@ -225,11 +222,10 @@ iframe {
     position: absolute;
     right: 0;
     top: 0;
-    border: 2px solid black;
+    border: 0;
     width: 65%;
     height: 100%;
-    padding: 0px;
-    margin: 10px;
+    border: 2px solid black;
 }
 
 .about {
@@ -239,12 +235,12 @@ iframe {
 
 .section {
     float: left;
-    width: 34%;
+    width: 30%;
 }
 
 .section.second {
     margin-left: 5%;
-    width: 16%;
+    width: 20%;
 }
 .section.third {
     float: right;

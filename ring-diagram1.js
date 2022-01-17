@@ -1,6 +1,6 @@
 import { initialNodes, colors } from './nodes';
 
-export class Sunburst {
+export class RingDiagram {
   constructor() {
     //Exposed variables
     const attrs = {
@@ -16,6 +16,8 @@ export class Sunburst {
       history: [],
       displayNodes: null,
       values: null,
+      circleArray: [],
+      lineArray: [],
       color: {
         Male: '#fc8d59',
         Female: '#91bfdb',
@@ -31,12 +33,12 @@ export class Sunburst {
         '55+': '#006d2c',
         0: '#989898',
       },
-      duration: 5000,
+      duration: 1000,
       arcs: null,
       textCirclesCategory: [],
       textCirclesCount: [],
       textCirclesPercent: [],
-      titleTextSize: '2.5vw',
+      titleTextSize: '25px',
       titleTextHeight: 60,
       isCompareMode: false,
       legendWidth: 150,
@@ -85,8 +87,7 @@ export class Sunburst {
   }
   
   /* Given screen width, height and number of arcs, return arc width, innerradius and text size*/
-  computeSunburstParameters(x, y, numArcs) {
-		//hello
+  computeSunburstParameters(x, y, numArcs) { 
     const attrs = this.getChartState();
 
     let textHeightOffset = 50;
@@ -97,8 +98,7 @@ export class Sunburst {
 
     let multiplier = 1.5;
     let n = 13; //'international' with 13 letters is longest word in diversity attributes
-    let innerTextSize =
-      (multiplier * (2 * innerRadius)) / n + 'px';
+    let innerTextSize = (multiplier * (2 * innerRadius)) / n + 'px';
     return [arcWidth, innerRadius, innerTextSize];
   }
 
@@ -169,7 +169,6 @@ export class Sunburst {
     // setting up compare button
     const toggleCompare = () => {
       attrs.isCompareMode = !attrs.isCompareMode;
-      //sb.convertData();
       sb.update();
     };
     
@@ -177,17 +176,6 @@ export class Sunburst {
     return this;
   }
   
-  convertData(){
-    let attrs = this.getChartState();
-  	if (attrs.isCompareMode){
-      attrs.pies = new Array(attrs.totalSlices)
-          .fill('')
-          .map((_, i) => attrs.pies[0].slice(i *  attrs.totalRings, (i + 1) *  attrs.totalRings));
-    } else {
-     	attrs.pies = [attrs.pies.flat()]
-    }
-    console.log(attrs.pies)
-  }
 
   render(academicValues, diversityValues){
   		let attrs = this.getChartState();
@@ -231,38 +219,25 @@ export class Sunburst {
         };
       
        attrs.pies = [];
+    
+    		const makeLabel = (words) => {
+          const filtered = words.filter((word) => word !== 'Total');
+          const result = filtered.join('\r\n');
+          return result;
+        };
+    
+    	 attrs.slices = slices.map(makeLabel);
     	 attrs.totalSlices = slices.length;
     	 attrs.totalRings = Object.values(diversityValues).filter(arr => arr.length > 0).length;
-    
-      
-    	/*slices.forEach((slice, sliceCount) => {
-       		let ringCount = 0;
-          Object.keys(diversityValues).forEach((dv) => {
-            let values = [...diversityValues[dv]];
-            
-             values = values.map(v => {
-              return {
-                "group" : dv,
-                "category": v,
-								"query": makeQuery(slice, dv, v),
-                "sliceNumber": sliceCount,
-                "ringNumber": ringCount
-              };
-            });
-            if (values.length > 0){
-            	ringCount++;
-            	attrs.pies.push(values);
-            }
-            
-         });
-       });
-    */
+				
+
         let ringCount = 0;
         Object.keys(diversityValues).forEach((dv) => {
           	slices.forEach((slice, sliceCount) => {
           		let values = [...diversityValues[dv]];
              	values = values.map(v => {
                   return {
+                    "visible": true,
                     "group" : dv,
                     "category": v,
                     "query": makeQuery(slice, dv, v),
@@ -278,9 +253,46 @@ export class Sunburst {
               ringCount++;
            }
        });
+  
+    	// Render title
+    	const titleBuilder = (academicValues, diversityValues) => {
+        let list = [];
+        const getAttrAsTitle = (attr) => {
+           if (attr === 'Academic Year'){
+              return ' 2013-2021';
+            } else if (attr === 'Degree'){
+                return ' all degrees';
+            } else if (attr === 'Faculty'){
+                return ' all faculties';
+            } else if (attr === 'Study Status'){
+                return ' all study statuses';
+            } else if (attr === 'Age'){
+                return ' all ages';
+            } else if (attr === 'Sex'){
+                return ' all sexes';
+            } else if (attr === 'Citizenship Status'){
+                return ' all citizenship statuses';
+            }
+        }
+        for (const attr in academicValues){
+          if (academicValues[attr].length === 1 && academicValues[attr][0] === 'Total'){
+            list.push(getAttrAsTitle(attr));
+          }
+        }
+        for (const attr in diversityValues){
+          if (diversityValues[attr].length === 0){
+            list.push(getAttrAsTitle(attr));
+          }
+        }
+        if (list.length == 0) return '';
+        if (list.length == 1) return 'Students across ' + list.pop() + '.'; 
+        return 'Students across ' + list.slice(0, -1).join() + ' and ' + list.pop() + '.';
+    	};
     
-    	console.log(attrs.pies)
-
+    	d3.select('#viz-title-text')
+        .style('font-size', attrs.titleTextSize)
+        .text(titleBuilder(academicValues, diversityValues));
+    
     	this.update();
   }
   
@@ -327,7 +339,8 @@ export class Sunburst {
       function generateArc(d){
       	return getArc(d)(d);
       }
-  
+    
+
       function arcTween(a) {
         this._current = this._current || a;
         let i = d3.interpolate(this._current, a);
@@ -357,63 +370,6 @@ export class Sunburst {
 				return [translateX, translateY, scale];
       }
       
-
-    	//Add circles
-    	let circleArray = Array.from(Array((isCompareMode) ? totalSlices : 1).keys());
-      let circleGroups = attrs.container
-      												.selectAll('g.center')
-      												.data(circleArray)
-      												.join(
-                              	enter => {
-                                  const centerGroup = enter.append('g')
-                                  			.attr("class", "center")
-                                  			.attr("id", d => "center" + d)
-                                        .attr("transform", d => {
-                                              let initialSize = Math.min(width, height);
-                                              let tx = initialSize / 2  + whitespaceWidth / 2; 
-                                              let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
-                                              return `translate(${tx},${ty})`;
-                                          });
-                                let circleGroup = centerGroup
-                                  .append('circle')
-                                  .attr('cx', 0)
-                                  .attr('cy', 0)
-                                  .attr('r', innerRadius)
-                                  .attr('stroke', 'black')
-                                  .style('stroke-width', 2)
-                                  .attr('fill', 'white')
-                                const appendTextElement = (dy, name, text) => {
-                                  centerGroup
-                                    .append('text')
-                                  	.attr('class', name)
-                                  	.attr('opacity', 0.5)
-                                    .attr('x', 0)
-                                    .attr('y', 0)
-                                    .attr('dy', dy)
-                                    .style('text-anchor', 'middle')
-                                    .style('font-size', innerTextSize)
-                                    .text(text)
-                                } 
-                                appendTextElement('-0.5em', 'category', attrs.placeholderInnerText1);
-                                appendTextElement('0.5em', 'num_students', attrs.placeholderInnerText2);
-                                appendTextElement('1.5em', 'percent_in_group', attrs.placeholderInnerText3);
-                                return centerGroup;
-                               },
-                      update => update,
-                      exit => exit.transition("circleExitTr").duration(attrs.duration)
-                                  .attr('transform', d => {
-                                      const [tx, ty, s] = getTransformation(d);
-                                      return `translate(${tx},${ty}) scale(${s})`;
-                                  }).on('end', function() {
-                                    d3.select(this).remove();
-                                  })
-        						).transition("circleUpdateTr").duration(attrs.duration)
-                        .attr("transform", d => {
-                              const [tx, ty, s] = getTransformation(d);
-                              return `translate(${tx},${ty}) scale(${s})`;
-                      	})
-      
-    
     	// Make pie groups
     	let pieGroups = attrs.container
       								.selectAll('g.pie')
@@ -422,10 +378,8 @@ export class Sunburst {
                         enter => enter.append('g')
                         	.attr("class", "pie")
           								.attr("transform", d => {
-                            		let initialSize = Math.min(width, height);
-                            		let tx = initialSize / 2  + whitespaceWidth / 2; 
-                            		let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
-                                return `translate(${tx},${ty})`;
+                            		const [tx, ty, s] = getTransformation(d[0].sliceNumber);
+                          			return `translate(${tx},${ty}) scale(${s})`;
                             }),
                         update => update
                         	.transition("pieUpdateTr").duration(attrs.duration)
@@ -436,7 +390,16 @@ export class Sunburst {
                         exit => exit.remove()
                       );
     
+    	const fixCategory = (category) => {
+        let result = category.replace(/[+=<]/g, "-");
+    		if (!result[0].match(/[a-zA-Z]/)){
+         	return "_"+result; 
+        }
+        return result;
+      }
+    
     	// Make arcs
+      // Make arcs
       pieGroups.selectAll("path")
         .data(generatePie)
         .join(
@@ -482,7 +445,7 @@ export class Sunburst {
                           	updateCircleText(d, d.data.sliceNumber);
                         	});
                       } else {
-                        updateCircleText(d, 0);
+                        updateCircleText(d, circleArray.length-1);
                       }
                   	})
                   .on('mouseout', function (d, i) {
@@ -500,22 +463,33 @@ export class Sunburst {
                       d3.selectAll(".center > .num_students").text(attrs.placeholderInnerText2).attr('opacity', '0.5');
                       d3.selectAll(".center > .percent_in_group").text(attrs.placeholderInnerText3).attr('opacity', '0.5');
                   }).on('click', function(d, i) {
-                    	attrs.history.push([...attrs.pies]);
+											if (totalRings <= 1){
+                      	alert("Cannot display more detail");
+                        return;
+                      }
                     
-                    	let newPies = attrs.pies.filter(p => p[0].group != d.data.group);
+                    	attrs.history.push(attrs.pies);
+                    
+                    	let newPies = JSON.parse(JSON.stringify(attrs.pies));
+                    	newPies = newPies.filter(p => p[0].group != d.data.group);
 
+                    	let ringNumber = d.data.ringNumber;
                     	const index = attrs.attributeIndex.indexOf(d.data.group);
-                    	newPies.forEach(p => { p[0].query[index] = d.data.category});
+                    	newPies.forEach(p => { 
+                        p.forEach(s=> {
+                        	s.query[index] = d.data.category; 
+                        	if (s.ringNumber > ringNumber) s.ringNumber-=1;
+                        })
+                      });
                     
-                    	console.log(attrs.pies);
-                    	console.log(newPies);
-                    	
+                    	d3.select(this).remove();
                     	attrs.pies = newPies;
                     	sb.update();
                   }),
                   update => update
-                          .attr('d', generateArc)
+        									.attr('class', d => d.data.category)
         									.attr('fill', d => attrs.color[d.data.category])
+        									.attr('d', generateArc)
                           .transition("arcIntTr").duration(attrs.duration)
                           .attrTween('d', arcTween),
                   exit => exit
@@ -525,228 +499,163 @@ export class Sunburst {
                             d3.select(this).remove();
                         })
           )
-      
-
-    	// Make circle groups
-    	/*let circleGroups = attrs.container
-        .selectAll('svg > g')
-        .data(data)
-      	.join(
-        	enter => {
-            				const circleGroup = enter.append('g')
-          								.attr("transform", d => {
-                            		let initialSize = Math.min(width, height);
-                            		let tx = initialSize / 2  + whitespaceWidth / 2; 
-                            		let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
-                                return `translate(${tx},${ty})`;
-                            });
-
-                    let centerGroup = circleGroup
-                      .append('circle')
-                      .attr('cx', 0)
-                      .attr('cy', 0)
-                      .attr('r', innerRadius)
-                      .attr('stroke', 'black')
-                      .style('stroke-width', 5)
-                      .attr('fill', 'white')
-                    const appendTextElement = (dy) => {
-                      centerGroup
-                      .append('text')
-                      .attr('x', 0)
-                      .attr('y', 0)
-                      .attr('dy', dy)
-                      .style('text-anchor', 'middle')
-                      .style('font-size', innerTextSize)
-                      .text('');
-                    }
-                    appendTextElement('-0.5em');
-                    appendTextElement('0.5em');
-                    appendTextElement('1.5em');
-                    return circleGroup;
-                   },
-          update => update,
-          exit => exit.transition().duration(attrs.duration)
-                    	.attr('transform', d => {
-                          const [tx, ty, s] = getTransformation(d[0]);
-                          return `translate(${tx},${ty}) scale(${s})`;
-                      }).on('end', function() {
-                      	d3.select(this).remove();
-                    	})
-        );
-			
-
-    	// Make pie groups
-      let pieGroups = circleGroups.selectAll('g')
-                  .data(d => d)
-                  .join(
-                    enter => enter
-                      .append('g'),
-                    update => update,
-                    exit => exit.remove()
-                  );
-
-      let arcs = pieGroups.selectAll("path")
-        .data(generatePie)
-        .join(
-          enter => enter
-                  .append('path')
-                  .attr('stroke', 'black')
-                  .attr('stroke-width', '2px')
-                  .attr('opacity', 1)
-                  .attr('fill', d => attrs.color[d.data.key])
-                  .attr('d', generateArc)
-          				.each(function(d){ this._current = d; }),
-          update => update.attr('d', generateArc),
-          exit => exit
-                  .transition().duration(attrs.duration)
-                  .style('opacity', 0)
-                  .on('end', function() {
-                    d3.select(this).remove();
-                  })
-          )
-    
-    	
-    
-      // Handle translation transitions
-      let duration = (attrs.firstRender) ? 0 : attrs.duration;
-      
-      circleGroups.transition().duration(duration)
-        .attr('transform', d => {
-              const [tx, ty, s] = getTransformation(d[0]);
-              return `translate(${tx},${ty}) scale(${s})`;
-      }).on('end', updateArcs);
-      attrs.previousCellSize = cellSize;
-    
-      function updateArcs(){
-    		if (!attrs.firstRender && attrs.isCompareMode){
-            arcs.transition().duration(duration).attrTween('d', arcTween);
+    	// Make lines
+    	const getCircleX = (radians, radius) => Math.sin(radians) * radius;
+      const getCircleY = (radians, radius) => Math.cos(radians) * radius;
+    	if (totalSlices > 1){
+        const getRadians = (sliceCount) => {
+          let radians = (2 * Math.PI * sliceCount) / totalSlices
+          if (totalSlices % 2 == 1) radians += Math.PI;
+          return radians;
         }
+
+        const lines = attrs.container
+                          .selectAll('g.lines')
+                          .data([0])
+                          .join(
+                              enter => enter.append('g')
+                                  .attr('class', 'lines')
+                                  .attr('transform', d => {
+                                      let initialSize = Math.min(width, height);
+                                      let tx = initialSize / 2  + whitespaceWidth / 2; 
+                                      let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
+                                      return `translate(${tx},${ty})`;
+                                  }),
+                              update => update.transition().duration(attrs.duration)
+                                          .style('opacity', isCompareMode ? 0 : 1),
+                              exit => exit
+                          )
+
+        lines.raise();
+        const lineLength = totalRings * arcWidth + attrs.extendedLineLength;
+        const lineArray = Array.from(Array(attrs.totalSlices).keys()).map(getRadians);
+        console.log(lineArray);
+        lines.selectAll('line')
+              .data(lineArray)
+              .join(
+                enter => 
+                  enter
+                    .append('line')
+                    .style('stroke', 'black')
+                    .style('stroke-width', 3)
+                    .attr('x1', radians => getCircleX(radians, innerRadius))
+                    .attr('y1', radians => getCircleY(radians, innerRadius))
+                    .attr('x2', radians => getCircleX(radians, innerRadius + lineLength))
+                    .attr('y2', radians => getCircleY(radians, innerRadius + lineLength)),
+                update => update
+          					.attr('x1', radians => getCircleX(radians, innerRadius))
+                    .attr('y1', radians => getCircleY(radians, innerRadius))
+                    .attr('x2', radians => getCircleX(radians, innerRadius + lineLength))
+                    .attr('y2', radians => getCircleY(radians, innerRadius + lineLength)),
+                exit => exit.remove()
+              );
       }
-      attrs.firstRender = false;
-*/
-  /*
-            .data(d => generatePie(d, 'final'))
-            .join(
-              enter => enter,
-              update => update,
-              exit => exit
-                      .transition().duration(attrs.duration)
-                      .style('opacity', 0)
-                      .on('end', function() {
-                        d3.select(this).remove();
-                      })
-              );*/
-    /*
-    transition().duration(attrs.duration)
-          					 .attr('d', generateArc)
-         						 .attrTween('d', arcTween)*/
+ 
+ 			// Add labels
+    	const halfSliceRadians = Math.PI / totalSlices;
+    	const textDistance = attrs.textDistance;
+    	let labels = attrs.container
+      								.selectAll('text.labels')
+      								.data(attrs.slices)
+      								.join(
+                        enter => enter.append('text')
+                        			.attr("class", "labels")
+                        			.text(d => d)
+                        			.attr("transform", (slice,sliceCount) => {
+                                let initialSize = Math.min(width, height);
+                                let tx = initialSize / 2  + whitespaceWidth / 2; 
+                                let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
+                                
+                                let radians = (2 * Math.PI * sliceCount) / totalSlices + halfSliceRadians;
+                                let radius = innerRadius + totalRings * arcWidth + textDistance;
+                                let x = getCircleX(radians, radius);
+                                let y = -getCircleY(radians, radius);
+                                
+                                if (x < -1) x -= slice.length * 9; //left side adjust
+                                else if (x < 1) x -= slice.length * 5; //middle text adjust
+                                
+                          			return `translate(${tx+x},${ty+y}) `;
+                            	}),
+                        update => update
+                        	.transition("pieUpdateTr").duration(attrs.duration)
+          								.attr("transform", (slice,sliceCount) => {
+                            		let initialSize = Math.min(width, height);
+                                let tx = initialSize / 2  + whitespaceWidth / 2; 
+                                let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
+                                
+                                let radians = (2 * Math.PI * sliceCount) / totalSlices + halfSliceRadians;
+                                let radius = innerRadius + totalRings * arcWidth + textDistance;
+                                let x = getCircleX(radians, radius);
+                                let y = -getCircleY(radians, radius);
+                            
+                            		if (x < -1) x -= slice.length * 9; //left side adjust
+                                else if (x < 1) x -= slice.length * 5; //middle text adjust
+                            
+                          			return `translate(${tx+x},${ty+y}) `;
+                            }),
+                        exit => exit.remove()
+                      );
+    
+    	// Add circles
+      const circleArray = Array.from(Array(totalSlices).keys());
+      let circleGroups = attrs.container
+      												.selectAll('g.center')
+      												.data(circleArray)
+      												.join(
+                              	enter => {
+                                  const centerGroup = enter
+                                  			.append('g')
+                                  			.attr("class", "center")
+                                  			.attr("id", d => "center" + d)
+                                  			.attr("transform", d => {
+                                              let initialSize = Math.min(width, height);
+                                              let tx = initialSize / 2  + whitespaceWidth / 2; 
+                                              let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
+                                              return `translate(${tx},${ty})`;
+                                          });
+                                	let circleGroup = centerGroup
+                                        .append('circle')
+                                        .attr('cx', 0)
+                                        .attr('cy', 0)
+                                        .attr('r', innerRadius)
+                                        .attr('stroke', 'black')
+                                        .style('stroke-width', 2)
+                                        .attr('fill', 'white')
+                                  const appendTextElement = (dy, name, text) => {
+                                      centerGroup
+                                          .append('text')
+                                          .attr('class', name)
+                                          .attr('opacity', 0.5)
+                                          .attr('x', 0)
+                                          .attr('y', 0)
+                                          .attr('dy', dy)
+                                          .style('text-anchor', 'middle')
+                                          .style('font-size', innerTextSize)
+                                          .text(text)
+                                  } 
+                                  appendTextElement('-0.5em', 'category', attrs.placeholderInnerText1);
+                                  appendTextElement('0.5em', 'num_students', attrs.placeholderInnerText2);
+                                  appendTextElement('1.5em', 'percent_in_group', attrs.placeholderInnerText3);
+                                  return centerGroup;
+                               	},
+                              	update => {
+                                  update.transition("circleUpdateTr").duration(attrs.duration)
+                  .attr("transform", d => {
+                        const [tx, ty, s] = getTransformation(d);
+                        return `translate(${tx},${ty}) scale(${s})`;
+                  });
+                                           update.select('circle').attr('r', innerRadius);
+                                  return update;
+                                          },
+                              	exit => exit
+                            );
+      //circleGroups
+    	circleGroups.raise();
+    	this.renderLegend();
   }
   
   
-  
-  /* Recurring render 
-  render(values) {
-    let attrs = this.getChartState();
-    let sb = this;
+  renderLegend() {
 
-    // Setting values so values is still accessible when compare is toggled
-    attrs.values = values;
-
-    
-    // repurposing back button if necessary
-    if (attrs.history.length > 0) {
-      const back = () => sb.render(attrs.history.pop());
-      document.getElementById('back-button').onclick = back;
-    } else {
-      document.getElementById('back-button').onclick =
-        attrs.displayNodes;
-    }
-
-    // remove all elements in svg
-    this.removeAll();
-
-    // re-create the new elements
-    if (!attrs.compareMode) { 
-      
-      // disable compare mode if only 1 slice
-      document.getElementById('compare-button').innerHTML = 'Compare';
-      if (Object.keys(values).length === 1){
-        document.getElementById('compare-button').disabled = true;
-        document.getElementById('compare-button').style.backgroundColor =this.rgbaObjToColor(colors.Disabled);
-        document.getElementById('compare-button').style.color =this.rgbaObjToColor(colors.Disabled_Text);
-      } else{
-        document.getElementById('compare-button').disabled = false;
-        document.getElementById('compare-button').style.backgroundColor = this.rgbaObjToColor(colors.Button);
-				document.getElementById('compare-button').style.color ='white';
-      }
-      
-      this.renderSunburst(values);
-    } else {
-      document.getElementById('compare-button').style.backgroundColor =  this.rgbaObjToColor(colors.Button);
-      document.getElementById('compare-button').innerHTML = 'Conjoin';
-      this.renderCompare(values);
-    }
-    this.renderLegend(values);
-  }*/
-
-  renderLegend(values) {
-    let attrs = this.getChartState();
-
-    //hierarchial tree legend
-    let legend = d3
-      .select('#sunburst-legend')
-      .attr('width', attrs.legendWidth);
-    legend.selectAll('*').remove();
-    
-    let x = 20;
-    let y = 10;
-    legend.append('text')
-          .attr('x', x + 20)
-          .attr('y', y + 6)
-          .text('LEGEND')
-          .style('font-size', '20px')
-    			.style('fill', 'white')
-          .attr('alignment-baseline', 'middle');
-    
-     y += 20;
-    
-    let firstSlice = Object.values(values)[0];
-    for (const attr in firstSlice) {
-      const array = Object.keys(firstSlice[attr]);
-      legend
-        .append('text')
-        .attr('x', x)
-        .attr('y', y + 6)
-        .text(attr)
-        .style('font-size', '15px')
-        .style('fill', 'white')
-        .attr('alignment-baseline', 'middle');
-			 y += 20;
-      for (const value of array) {
-        if (value === 'Total') continue;
-        legend
-          .append('rect')
-          .attr('id', value + 'rect')
-          .attr('x', x)
-          .attr('y', y)
-          .attr('width', 12)
-          .attr('height', 12)
-          .attr('stroke', 'black')
-          .style('stroke-width', 1)
-          .style('fill', attrs.colors[value]);
-        legend
-          .append('text')
-          .attr('id', value + 'text')
-          .attr('x', x + 20)
-          .attr('y', y + 6)
-          .text(value)
-          .style('font-size', '14px')
-        	.style('fill', 'white')
-          .attr('alignment-baseline', 'middle');
-        y += 20;
-      }
-      y += 10;
-    
-    }
   }
 }
