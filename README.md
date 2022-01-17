@@ -28,32 +28,31 @@
 
 ### Design Document
 #### Sunburst diagram design
-Diagram choice -  Captures hierarchical nature of data. Displays proportions of uncollected vs collected. 
-STEM vs non-STEM option- 
-Prof Gananatha - Combine Science & Engineering into STEM vs non-STEM students. Uncollected categories. Students upto age 85 should be collected as average age of student is rising.
-Descriptions in center - Provides data description and context if necessary. Must know how and where data is gathered for data context (e.g. sex vs gender).
-On category click zoom - Displays the categories to allow the user to clearly see all attributes
-Information icon - Provides metadata of visualization (intro, sources, choices & credits). 
-Select all - Ease of use for users to click one button to select all attributes
-Colorblind colors - Accessibility 
-Selected Categories on right - Ease of use for users to know in a list format what categories they have selected to visualize
-Legend - Identifies the meaning behind each color
-Black text in visualization - contrasts with  color blind colors
-White text otherwise - contrasts with background
-Dark background - Easier on the eyes
-Gray for uncollected - Gray could be interpreted as lifeless or missing
+- Diagram choice -  Captures hierarchical nature of data. Displays proportions of uncollected vs collected. 
+- STEM vs non-STEM option- 
+- Prof Gananatha - Combine Science & Engineering into STEM vs non-STEM students. Uncollected categories. Students upto age 85 should be collected as average age of student is rising.
+- Descriptions in center - Provides data description and context if necessary. Must know how and where data is gathered for data context (e.g. sex vs gender).
+- On category click zoom - Displays the categories to allow the user to clearly see all attributes
+- Information icon - Provides metadata of visualization (intro, sources, choices & credits). 
+- Select all - Ease of use for users to click one button to select all attributes
+- Selected Categories on right - Ease of use for users to know in a list format what categories they have selected to visualize
+- Legend - Identifies the meaning behind each color
+- Black text in visualization - contrasts with  color blind colors
+- White text otherwise - contrasts with background
+- Dark background - Easier on the eyes
+- Gray for uncollected - Gray could be interpreted as lifeless or missing
 
 ##### TODO
-Make text go alongside arc, so more text is displayed
-Text should not cover visualization
+- Make text go alongside arc, so more text is displayed
+- Text should not cover visualization
 
 #### Ring diagram design
-Diagram choice - encapsulate all available diversity data and allow comparisions between demographics .
+- Diagram choice - encapsulate all available diversity data and allow comparisions between demographics .
 
 ##### TODO
-Fix transitions
+- Fix transitions
 
 #### General
-Colorblind accessility
-Ordering of data should be randomized (or ordered by popoulation size)
-Color assignments should be randomized
+- Colorblind accessility
+- Ordering of data should be randomized (or ordered by popoulation size)
+- Color assignments should be randomized
