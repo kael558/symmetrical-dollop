@@ -1,5 +1,4 @@
 ### Files 
-Filename |
 | Filename     | Description |
 | ----------- | ----------- |
 | index.html      | Contains all necessary html elements. The Javascript files build upon these elements (e.g. the svg). [Github Pages](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Using_Github_pages) will automatically use this file as the primary entry point.        |
