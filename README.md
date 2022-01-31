@@ -56,10 +56,12 @@
 - Center circle is white - To draw the users attention to hover and observe numbers
 - Fixed size slices - The purpose is to compare diversity populations within academic demographic (slices), so fixed size slices are used because comparison of total population between academic demographics is not the priority. 
 - Compare mode - Allows comparison of diversity populations between academic demographics.
-- Arc size depicts demographic % within slice - Allows users to easily know how much of the student population is of a particular diversity within a demographic (slice)
+- Arc length dependent on diversity % within slice - Allows users to easily know how much of the student population is of a particular diversity within a demographic (slice)
 - On arc hover - Lets the user see the values associated with that demographic
 - \# of students provided - So users may see a numerical value because the visualization does not demonstrate a numerical value
 - '<5' is displayed if less than 5 students - To prevent identifiability
+- If no students are in demographic slice, a grey arc is displayed - grey indicates no students and displays 'No students' in center if hovered
+- If no students are in diversity population, the arc length is 0 - corresponds to the arc size dependent on diversity %
 - % of students - So users see the percent value associated with the size of the arc within the demographic slice
 - Legend - Identifies each category with the color
 - Year & Age are sorted - To allow users to easily observe time or age progression trends
