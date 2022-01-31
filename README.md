@@ -28,31 +28,58 @@
 
 ### Design Rationale Document
 #### Sunburst diagram design
-- Diagram choice -  Captures hierarchical nature of data. Displays proportions of uncollected vs collected. 
-- STEM vs non-STEM option- 
-- Prof Gananatha - Combine Science & Engineering into STEM vs non-STEM students. Uncollected categories. Students upto age 85 should be collected as average age of student is rising.
+- Diagram choice - Captures hierarchical nature of data. Displays proportions of uncollected vs collected. 
+- STEM vs non-STEM option - Aggregated other faculty data to provide this option. 
+- Uncollected category choices - Indigineity, Ethnicity, Race etc... Suggested by Prof Gananatha as data categories relevant to current times.
+- Uncollected category values - Students upto age 85 displayed as uncollected (because average age of student is rising)
 - Descriptions in center - Provides data description and context if necessary. Must know how and where data is gathered for data context (e.g. sex vs gender).
 - On category click zoom - Displays the categories to allow the user to clearly see all attributes
 - Information icon - Provides metadata of visualization (intro, sources, choices & credits). 
 - Select all - Ease of use for users to click one button to select all attributes
-- Selected Categories on right - Ease of use for users to know in a list format what categories they have selected to visualize
+- Selected Categories on right - Additional interface to let users know (in a list format) what categories they have selected to visualize
 - Legend - Identifies the meaning behind each color
-- Black text in visualization - contrasts with  color blind colors
-- White text otherwise - contrasts with background
-- Dark background - Easier on the eyes
-- Gray for uncollected - Gray could be interpreted as lifeless or missing
+- Black text in slices - Contrasts with  color blind colors
+- White text otherwise - Contrasts with background color
+- Gray for uncollected - Gray is symbolic for missing
+- Text in slices was written (counter)clockwise - To make it easier to read without rotating ones head to read
+- Text in slices switches direction (becomes counterclockwise) at the 90 & 270 (assuming 0 degrees at top) - This is so the text is not upside down
+- Back button functionality - Lets users navigate back from zoomed in view
+- Visualize button in top right - Right is usually associated with moving forward
 
 ##### TODO
-- Make text go alongside arc, so more text is displayed
-- Text should not cover visualization
+- Make text go from inward to outward, so more text is displayed
+- Center description text should not overlap with visualization
 
 #### Ring diagram design
-- Diagram choice - encapsulate all available diversity data and allow comparisions between demographics .
+- Diagram choice - Able to encapsulate all available diversity data, show visual comparison within demographics and allow comparisions between demographics.
+- Circular format with slices - Doesn't indicate any demographic is first or last and thus more important
+- Center circle is white - To draw the users attention to hover and observe numbers
+- Fixed size slices - The purpose is to compare diversity populations within academic demographic (slices), so fixed size slices are used because comparison of total population between academic demographics is not the priority. 
+- Compare mode - Allows comparison of diversity populations between academic demographics.
+- Arc size depicts demographic % within slice - Allows users to easily know how much of the student population is of a particular diversity within a demographic (slice)
+- On arc hover - Lets the user see the values associated with that demographic
+- # of students provided - So users may see a numerical value because the visualization does not demonstrate a numerical value
+- '<5' is displayed if less than 5 students - To prevent identifiability
+- % of students - So users see the percent value associated with the size of the arc within the demographic slice
+- Legend - Identifies each category with the color
+- Year & Age are sorted - To allow users to easily observe time or age progression trends
+- On arc click zoom - Lets the user see the other diversity attributes associated with that demographic.
+- On compare click - Puts all slices in their own ring diagram. Allows users to switch between views.
+- On arc hover (in compare mode) - Displays values associated with that demographic in all diagrams. Legend category also highlights to let user know which category is being hoverred.
+- On arc click (in compare mode) zoom - Same as before but for all diagrams.
+- Back button functionality - Lets users navigate back from zoomed in view
+- Title displays unselected demographics - Lets users know what each demographic (each arc) is including 
+- Color assignments are set in a randomized order - To prevent association of any color with any demographic
+- Age is the only sequential colored set - To allow users to observe age progression trends
+
 
 ##### TODO
 - Fix transitions
+- Slice text should not overlap with visualization
+- Put category within arc to allow the user to identify the category more easily
 
-#### General
+#### General (applies to all)
 - Colorblind accessility
 - Ordering of data should be randomized (or ordered by popoulation size)
-- Color assignments should be randomized
+- Dark background - Easier on the eyes
+- Back button in top left - Left is usually associated with going back
