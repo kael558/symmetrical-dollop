@@ -41,8 +41,8 @@
 - Black text in slices - Contrasts with  color blind colors
 - White text otherwise - Contrasts with background color
 - Gray for uncollected - Gray is symbolic for missing
-- Text in slices was written (counter)clockwise - To make it easier to read without rotating ones head to read
-- Text in slices switches direction (becomes counterclockwise) at the 90 & 270 (assuming 0 degrees at top) - This is so the text is not upside down
+- Text in slices was written clockwise - To make it easier to read without rotating ones head to read
+- Text in slices switches direction (becomes counterclockwise) at the 90 & 270 (assuming 0 degrees at top) - The text is not upside down
 - Back button functionality - Lets users navigate back from zoomed in view
 - Visualize button in top right - Right is usually associated with moving forward
 
@@ -58,7 +58,7 @@
 - Compare mode - Allows comparison of diversity populations between academic demographics.
 - Arc size depicts demographic % within slice - Allows users to easily know how much of the student population is of a particular diversity within a demographic (slice)
 - On arc hover - Lets the user see the values associated with that demographic
-- # of students provided - So users may see a numerical value because the visualization does not demonstrate a numerical value
+- \# of students provided - So users may see a numerical value because the visualization does not demonstrate a numerical value
 - '<5' is displayed if less than 5 students - To prevent identifiability
 - % of students - So users see the percent value associated with the size of the arc within the demographic slice
 - Legend - Identifies each category with the color
