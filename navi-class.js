@@ -232,7 +232,7 @@ export class Sunburst {
     		document.getElementById('select-all-group').style.top = (window.innerHeight+30)/2 + "px"
     
     
-			 	let textCircle;
+			 	let textCircle, fo, innerRadius;
 
     		let root = nodes
         root = d3.hierarchy(root);
@@ -261,12 +261,15 @@ export class Sunburst {
             .data(sortedNodes);
 			
         slice.exit().remove();
-
+				
 				/* GET/SET SLICES */
         const newSlice = slice.enter()
             .append('g').attr('class', 'slice')
         		.on('mouseover', d => {
-              textCircle.text(d.data.description)       
+              textCircle.text(d.data.description) 
+
+               let h = textCircle.node().getBoundingClientRect().height;
+               fo.attr('y', -h);
             }).on('mouseout', d => {
                textCircle.text(attrs.placeholderInnerText)
             })
@@ -480,7 +483,7 @@ export class Sunburst {
     
     	
     		/* CREATE CENTER CIRCLE */
-       let innerRadius = y(0.3333333) 
+       innerRadius = y(0.3333333) 
        let centerGroup = svg
             .append('g')
            .attr('id', 'center-group-nodes')
@@ -494,16 +497,21 @@ export class Sunburst {
             .style('stroke-width',0)
             .attr('fill', this.rgbaObjToColor(colors.Slate_Grey));
         
-        textCircle = centerGroup
+    		fo = centerGroup
             .append('foreignObject')
             .attr('x', -innerRadius)
-            .attr('y', -innerRadius/4)
         		.attr('width',  innerRadius*2)
-  					.attr('height',  innerRadius*2)
+  					.attr('height',  innerRadius*2);
+    
+        textCircle = fo
         		.append('xhtml:p')
+    					.attr('id', 'c-text')
               .text(attrs.placeholderInnerText)
-    					.style('font-size', attrs.centerTextSize)
-    					
+    					.style('font-size', attrs.centerTextSize);
+    
+        fo.attr('y', -textCircle.node().getBoundingClientRect().height);
+    
+    
     		document.getElementById('back-button-nodes').onclick = () => focusOn();
 				document.getElementById('back-button-nodes').disabled = true;
          document.getElementById('back-button-nodes').style.backgroundColor = nc.rgbaObjToColor(colors.Disabled);

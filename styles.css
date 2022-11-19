@@ -15,6 +15,7 @@ body {
   position: fixed;
   top: 0;
   right: 0;
+  padding-bottom: 20px;
   width: 100%;
   height: 100%;
 }
@@ -23,6 +24,7 @@ body {
 
 #center-group-nodes {
 	position: fixed;
+  display: flex;
 }
 
 foreignObject
@@ -30,10 +32,7 @@ foreignObject
 		color: white; 
     text-align: center;
     padding: 0 20px;
-    margin: 20px;
     display: flex;
-    justify-content: center; /* align horizontal */
-    align-items: center; /* align vertical */
   	pointer-events: none;
 }
 
@@ -202,11 +201,6 @@ h2 {
     margin: 20px;
 }
 
-h4 {
-  margin: 0px;
-  margin-top: 5px;
-}
-
 .welcome-and-video {
   	  padding: 15px;
     position: relative;
@@ -225,7 +219,6 @@ iframe {
     border: 0;
     width: 65%;
     height: 100%;
-    border: 2px solid black;
 }
 
 .about {

@@ -1,5 +1,5 @@
 import { Sunburst } from './navi-class';
-import { RingDiagram } from './ring-diagram';
+import { RingDiagram } from './ring-diagram1';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 	//Ring diagram object
@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
          } else {
            	 document.getElementById('node-div').style.display = 'none';
 						 document.getElementById('viz-div').style.display = 'block';
-      	 		 //rd.render(academicValues, diversityValues); //For ring-diagram1.js
-           	 rd.initialRender(academicValues, diversityValues);
+      	 		 rd.render(academicValues, diversityValues); //For ring-diagram1.js
+           	 //rd.initialRender(academicValues, diversityValues);
          }
       } else {
          alert('Please wait for the data to finish loading');

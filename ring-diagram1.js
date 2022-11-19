@@ -10,7 +10,7 @@ export class RingDiagram {
       container: 'body',
       data: null,
       extendedLineLength: 40,
-      textDistance: 25,
+      textDistance: 15,
       outerTextSize: '25px',
       attributeIndex: null,
       history: [],
@@ -225,12 +225,12 @@ export class RingDiagram {
           const result = filtered.join('\r\n');
           return result;
         };
-    
+
     	 attrs.slices = slices.map(makeLabel);
+    	 attrs.rings = diversityValues;
     	 attrs.totalSlices = slices.length;
     	 attrs.totalRings = Object.values(diversityValues).filter(arr => arr.length > 0).length;
 				
-
         let ringCount = 0;
         Object.keys(diversityValues).forEach((dv) => {
           	slices.forEach((slice, sliceCount) => {
@@ -292,7 +292,6 @@ export class RingDiagram {
     	d3.select('#viz-title-text')
         .style('font-size', attrs.titleTextSize)
         .text(titleBuilder(academicValues, diversityValues));
-    
     	this.update();
   }
   
@@ -353,7 +352,7 @@ export class RingDiagram {
 
     	const getTransformation = (sliceNumber) => {
         let row = Math.min(parseInt(sliceNumber /cols), rows-1);// Accounting for conjoined case
-        let col = sliceNumber %cols;
+        let col = sliceNumber%cols;
 
         let translateX =
           cellSize / 2 +
@@ -392,20 +391,18 @@ export class RingDiagram {
     
     	const fixCategory = (category) => {
         let result = category.replace(/[+=<]/g, "-");
-    		if (!result[0].match(/[a-zA-Z]/)){
-         	return "_"+result; 
-        }
+    		if (!result[0].match(/[a-zA-Z]/))
+         	result= "_"+result; 
         return result;
       }
-    
-    	// Make arcs
+
       // Make arcs
       pieGroups.selectAll("path")
         .data(generatePie)
         .join(
           enter => enter
                   .append('path')
-        					.attr('class', d => d.data.category)
+        					.attr('class', d => fixCategory(d.data.category))
                   .attr('stroke', 'white')
                   .attr('stroke-width', '2px')
                   .attr('opacity', 1)
@@ -413,6 +410,7 @@ export class RingDiagram {
                   .attr('d', generateArc)
                   .each(function(d){ this._current = d; })
         					.on('mouseover', function (d, i) {
+
                     	//highlight arc
                   		d3.select(this)
                         .transition().duration('50')
@@ -440,7 +438,7 @@ export class RingDiagram {
                     
                     	//update circle text
                     	if (attrs.isCompareMode){
-                      	d3.selectAll("path." + d.data.category)
+                      	d3.selectAll("path." + fixCategory(d.data.category))
                           .each(d => {
                           	updateCircleText(d, d.data.sliceNumber);
                         	});
@@ -487,7 +485,7 @@ export class RingDiagram {
                     	sb.update();
                   }),
                   update => update
-        									.attr('class', d => d.data.category)
+        									.attr('class', d => fixCategory(d.data.category))
         									.attr('fill', d => attrs.color[d.data.category])
         									.attr('d', generateArc)
                           .transition("arcIntTr").duration(attrs.duration)
@@ -529,7 +527,7 @@ export class RingDiagram {
         lines.raise();
         const lineLength = totalRings * arcWidth + attrs.extendedLineLength;
         const lineArray = Array.from(Array(attrs.totalSlices).keys()).map(getRadians);
-        console.log(lineArray);
+
         lines.selectAll('line')
               .data(lineArray)
               .join(
@@ -552,47 +550,66 @@ export class RingDiagram {
       }
  
  			// Add labels
-    	const halfSliceRadians = Math.PI / totalSlices;
+      const halfSliceRadians = Math.PI / totalSlices;
     	const textDistance = attrs.textDistance;
+    
+    	const labelAnchor = (slice, sliceNumber) => {
+        	if (isCompareMode) return "middle";
+        
+        	let radians = (2 * Math.PI * sliceNumber) / totalSlices + halfSliceRadians;
+          let radius = innerRadius + totalRings * arcWidth + textDistance;
+          let offset_tx = getCircleX(radians, radius);
+          let offset_ty = -getCircleY(radians, radius);
+
+        	if (offset_tx < -1) return "end"
+        	else if (offset_tx < 1) return "middle"
+
+        	return "start";
+      }
+    
+    	const labelTransform = (slice,sliceNumber) => {
+        	let row = Math.min(parseInt(sliceNumber /cols), rows-1);// Accounting for conjoined case
+          let col = sliceNumber%cols;
+
+          let mid_tx =
+            cellSize / 2 +
+            col *  cellSize +
+            ((col + 1) * whitespaceWidth) / (cols + 1);
+          let mid_ty =
+            attrs.titleTextHeight +
+              cellSize / 2 +
+              row * cellSize +
+              ((row + 1) * whitespaceHeight) / (rows + 1);
+
+
+        	let radians = (2 * Math.PI * sliceNumber) / totalSlices + halfSliceRadians;
+          let radius = innerRadius + totalRings * arcWidth + textDistance;
+          let offset_tx = isCompareMode ? 0 : getCircleX(radians, radius);
+          let offset_ty = isCompareMode ? radius + 1.5*textDistance: -getCircleY(radians, radius);
+        	
+        	
+        	let scale = Math.min(1, cellSize/attrs.previousCellSize);
+  
+					let tx = mid_tx+offset_tx*scale;
+        	let ty = mid_ty+offset_ty*scale;
+
+          return `translate(${tx},${ty})`;
+      }
+
     	let labels = attrs.container
       								.selectAll('text.labels')
-      								.data(attrs.slices)
+      								.data(attrs.slices, slice=>slice)
       								.join(
                         enter => enter.append('text')
                         			.attr("class", "labels")
-                        			.text(d => d)
-                        			.attr("transform", (slice,sliceCount) => {
-                                let initialSize = Math.min(width, height);
-                                let tx = initialSize / 2  + whitespaceWidth / 2; 
-                                let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
-                                
-                                let radians = (2 * Math.PI * sliceCount) / totalSlices + halfSliceRadians;
-                                let radius = innerRadius + totalRings * arcWidth + textDistance;
-                                let x = getCircleX(radians, radius);
-                                let y = -getCircleY(radians, radius);
-                                
-                                if (x < -1) x -= slice.length * 9; //left side adjust
-                                else if (x < 1) x -= slice.length * 5; //middle text adjust
-                                
-                          			return `translate(${tx+x},${ty+y}) `;
-                            	}),
+                        			.style("text-anchor", (slice,sliceCount) => labelAnchor(slice,sliceCount))
+                        			.style('fill', "white")
+                        			.text(slice => slice)
+                        			.attr("transform", (slice,sliceCount) => labelTransform(slice,sliceCount)),
                         update => update
                         	.transition("pieUpdateTr").duration(attrs.duration)
-          								.attr("transform", (slice,sliceCount) => {
-                            		let initialSize = Math.min(width, height);
-                                let tx = initialSize / 2  + whitespaceWidth / 2; 
-                                let ty = attrs.titleTextHeight + initialSize / 2  + whitespaceHeight/ 2; 
-                                
-                                let radians = (2 * Math.PI * sliceCount) / totalSlices + halfSliceRadians;
-                                let radius = innerRadius + totalRings * arcWidth + textDistance;
-                                let x = getCircleX(radians, radius);
-                                let y = -getCircleY(radians, radius);
-                            
-                            		if (x < -1) x -= slice.length * 9; //left side adjust
-                                else if (x < 1) x -= slice.length * 5; //middle text adjust
-                            
-                          			return `translate(${tx+x},${ty+y}) `;
-                            }),
+                        	.style("text-anchor", (slice,sliceCount) =>  labelAnchor(slice,sliceCount))
+          								.attr("transform", (slice,sliceCount) => labelTransform(slice,sliceCount)),
                         exit => exit.remove()
                       );
     
@@ -647,15 +664,74 @@ export class RingDiagram {
                                            update.select('circle').attr('r', innerRadius);
                                   return update;
                                           },
-                              	exit => exit
+                              	exit => exit.remove()
                             );
       //circleGroups
     	circleGroups.raise();
     	this.renderLegend();
   }
   
-  
-  renderLegend() {
 
+  renderLegend() {
+    let attrs = this.getChartState();
+
+    console.log(attrs.rings);
+
+    //hierarchial tree legend
+    let legend = d3
+      .select('#sunburst-legend')
+      .attr('width', attrs.legendWidth);
+    legend.selectAll('*').remove();
+    
+    let x = 20;
+    let y = 10;
+    legend.append('text')
+          .attr('x', x + 20)
+          .attr('y', y + 6)
+          .text('LEGEND')
+          .style('font-size', '20px')
+    			.style('fill', 'white')
+          .attr('alignment-baseline', 'middle');
+    
+     y += 20;
+    
+    for (const category in attrs.rings){
+  		if ( attrs.rings[category].length == 0){
+        continue;  
+      }
+      legend
+        .append('text')
+        .attr('x', x)
+        .attr('y', y + 6)
+        .text(category)
+        .style('font-size', '15px')
+        .style('fill', 'white')
+        .attr('alignment-baseline', 'middle');
+			 y += 20;
+      
+      for (const value of attrs.rings[category]){
+        legend
+          .append('rect')
+          .attr('id', value + 'rect')
+          .attr('x', x)
+          .attr('y', y)
+          .attr('width', 12)
+          .attr('height', 12)
+          .attr('stroke', 'black')
+          .style('stroke-width', 1)
+          .style('fill', attrs.color[value]);
+        legend
+          .append('text')
+          .attr('id', value + 'text')
+          .attr('x', x + 20)
+          .attr('y', y + 6)
+          .text(value)
+          .style('font-size', '14px')
+        	.style('fill', 'white')
+          .attr('alignment-baseline', 'middle');
+        y += 20;
+      }
+      y+=10;
+    }
   }
 }
