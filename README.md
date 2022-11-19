@@ -1,4 +1,3 @@
-
 ### Files 
 | Filename     | Description |
 | ----------- | ----------- |
@@ -48,8 +47,8 @@
 - Visualize button in top right - Right is usually associated with moving forward
 
 ##### TODO
-- Make text go from inward to outward, so more text is displayed
-- Center description text should not overlap with visualization
+ - [ ] Make text go from inward to outward, so more text is displayed
+ - [x] Center description text should not overlap with visualization
 
 #### Ring diagram design
 - Diagram choice - Able to encapsulate all available diversity data, show visual comparison within demographics and allow comparisions between demographics.
@@ -77,9 +76,9 @@
 
 
 ##### TODO
-- Fix transitions
-- Slice text should not overlap with visualization
-- Put category within arc to allow the user to identify the category more easily
+- [x] Fix transitions
+- [x] Slice text should not overlap with visualization
+- [ ] Put category within arc to allow the user to identify the category more easily
 
 #### General (applies to all)
 - Colorblind accessility
