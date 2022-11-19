@@ -96,7 +96,7 @@ export class RingDiagram {
     let arcWidth = min / (2 * numArcs + 7); //min = 2*numArcs*arcWidth + 2*innerRadius, innerRadius = 3*arcWidth
     let innerRadius = 3 * arcWidth;
 
-    let multiplier = 1.5;
+    let multiplier = 1.2;
     let n = 13; //'international' with 13 letters is longest word in diversity attributes
     let innerTextSize = (multiplier * (2 * innerRadius)) / n + 'px';
     return [arcWidth, innerRadius, innerTextSize];
@@ -310,7 +310,10 @@ export class RingDiagram {
     	const totalSlices = attrs.totalSlices;
     	const totalRings = attrs.totalRings;
     	const isCompareMode = attrs.isCompareMode;
-			
+      document.getElementById('compare-button').innerHTML = isCompareMode ? 'Conjoin' : 'Compare'; 
+    
+    
+    
       const [width, height] = this.computeScreenDimensions();
     	const [cellSize, rows, cols] = this.computeCellDimensions(width, height, (isCompareMode) ? totalSlices : 1);
     	const [arcWidth, innerRadius, innerTextSize] = this.computeSunburstParameters(width, height, totalRings);
@@ -585,7 +588,7 @@ export class RingDiagram {
         	let radians = (2 * Math.PI * sliceNumber) / totalSlices + halfSliceRadians;
           let radius = innerRadius + totalRings * arcWidth + textDistance;
           let offset_tx = isCompareMode ? 0 : getCircleX(radians, radius);
-          let offset_ty = isCompareMode ? radius + 1.5*textDistance: -getCircleY(radians, radius);
+          let offset_ty = isCompareMode ? -radius - textDistance: -getCircleY(radians, radius);
         	
         	
         	let scale = Math.min(1, cellSize/attrs.previousCellSize);
@@ -636,7 +639,7 @@ export class RingDiagram {
                                         .attr('cy', 0)
                                         .attr('r', innerRadius)
                                         .attr('stroke', 'black')
-                                        .style('stroke-width', 2)
+                                        .style('stroke-width', 3)
                                         .attr('fill', 'white')
                                   const appendTextElement = (dy, name, text) => {
                                       centerGroup
@@ -656,11 +659,12 @@ export class RingDiagram {
                                   return centerGroup;
                                	},
                               	update => {
-                                  update.transition("circleUpdateTr").duration(attrs.duration)
-                  .attr("transform", d => {
-                        const [tx, ty, s] = getTransformation(d);
-                        return `translate(${tx},${ty}) scale(${s})`;
-                  });
+                                  
+                                          update.transition("circleUpdateTr").duration(attrs.duration)
+                                            .attr("transform", d => {
+                                                  const [tx, ty, s] = getTransformation(d);
+                                                  return `translate(${tx},${ty}) scale(${s})`;
+                                            });
                                            update.select('circle').attr('r', innerRadius);
                                   return update;
                                           },
