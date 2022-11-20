@@ -222,8 +222,9 @@ export const nodes = {
              "color": colors.Academic_Node_Fill,
               description: 'The classification of the amount of courses that a student is taking. Students enrolling in 3 or more credits across the Fall and Winter are full-time students. Whereas students enrolling in less than 3 credits are part-time students.',
               "children": [
-                {"name": "Part-time", "size": 42},
-                {"name": "Full-time", "size": 42},
+                {"name": "Part-time", "size": 28},
+                {"name": "Full-time", "size": 28},
+                {"name": "Co-op", "size": 28},
              ]  
             },
             {

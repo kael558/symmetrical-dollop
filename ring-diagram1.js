@@ -401,14 +401,24 @@ export class RingDiagram {
 
       // Make arcs
       pieGroups.selectAll("path")
-        .data(generatePie)
+        .data(generatePie, d=> {console.log(d); return d})
         .join(
           enter => enter
                   .append('path')
-        					.attr('class', d => fixCategory(d.data.category))
-                  .attr('stroke', 'white')
-                  .attr('stroke-width', '2px')
+        					.attr('stroke', 'white')
+        					.attr('stroke-width', '2px')
                   .attr('opacity', 1)
+        					,
+                  update => update
+                          .transition("arcIntTr").duration(attrs.duration)
+                          .attrTween('d', arcTween),
+                  exit => exit
+                          .transition().duration(attrs.duration)
+                          .style('opacity', 0)
+                          .on('end', function() {
+                            d3.select(this).remove();
+                        })
+          ).attr('class', d => fixCategory(d.data.category))
                   .attr('fill', d => attrs.color[d.data.category])
                   .attr('d', generateArc)
                   .each(function(d){ this._current = d; })
@@ -486,20 +496,7 @@ export class RingDiagram {
                     	d3.select(this).remove();
                     	attrs.pies = newPies;
                     	sb.update();
-                  }),
-                  update => update
-        									.attr('class', d => fixCategory(d.data.category))
-        									.attr('fill', d => attrs.color[d.data.category])
-        									.attr('d', generateArc)
-                          .transition("arcIntTr").duration(attrs.duration)
-                          .attrTween('d', arcTween),
-                  exit => exit
-                          .transition().duration(attrs.duration)
-                          .style('opacity', 0)
-                          .on('end', function() {
-                            d3.select(this).remove();
-                        })
-          )
+                  })
     	// Make lines
     	const getCircleX = (radians, radius) => Math.sin(radians) * radius;
       const getCircleY = (radians, radius) => Math.cos(radians) * radius;
@@ -697,7 +694,7 @@ export class RingDiagram {
     			.style('fill', 'white')
           .attr('alignment-baseline', 'middle');
     
-     y += 20;
+     y += 25;
     
     for (const category in attrs.rings){
   		if ( attrs.rings[category].length == 0){

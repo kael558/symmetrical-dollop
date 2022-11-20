@@ -130,16 +130,12 @@ li{
   font-size: 12px; 
 }
 
-h2{
-  border-bottom: 2px solid black;
+h2 {
+ 	border-bottom: 2px solid black;
   padding-bottom: 0px;
   margin-bottom: 0px;
 }
 
-h3{
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-}
 
 #info-div{
   position: fixed; /* Sit on top of the page content */
