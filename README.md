@@ -24,8 +24,9 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-See all information [here](https://kael558.github.io/EDIProjectPage/)
+This project was created under the supervision of [Dr. Fateme Rajabiyazdi](https://fatemerajabiyazdi.github.io//).
 
+See all information about the project [here](https://kael558.github.io/EDIProjectPage/).
 
 ### Built With
 * [D3](https://d3js.org/)
