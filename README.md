@@ -166,9 +166,6 @@ Don't forget to give the project a star! Thanks again!
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 <!-- CONTACT -->
 ## Contact
 
@@ -176,8 +173,6 @@ Rahel Gunaratne:
  - Email: rahel.gunaratne@gmail.com
  - [Twitter](https://twitter.com/gunaratne_rahel)
  - [LinkedIn](https://www.linkedin.com/in/rahelgunaratne/)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
