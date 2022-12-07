@@ -24,7 +24,9 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This project was created under the supervision of [Dr. Fateme Rajabiyazdi](https://fatemerajabiyazdi.github.io//).
+This project was funded under the [I-CUREUS Research Grant by Carleton University](https://carleton.ca/tls/future-learning-lab/i-cureus/).
+
+This project was supervised by [Dr. Fateme Rajabiyazdi](https://fatemerajabiyazdi.github.io//).
 
 See all information about the project [here](https://kael558.github.io/EDIProjectPage/).
 
