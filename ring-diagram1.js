@@ -230,7 +230,8 @@ export class RingDiagram {
     	 attrs.rings = diversityValues;
     	 attrs.totalSlices = slices.length;
     	 attrs.totalRings = Object.values(diversityValues).filter(arr => arr.length > 0).length;
-				
+			 attrs.academicValues = academicValues;
+    
         let ringCount = 0;
         Object.keys(diversityValues).forEach((dv) => {
           	slices.forEach((slice, sliceCount) => {
@@ -254,49 +255,14 @@ export class RingDiagram {
            }
        });
   
-    	// Render title
-    	const titleBuilder = (academicValues, diversityValues) => {
-        let list = [];
-        const getAttrAsTitle = (attr) => {
-           if (attr === 'Academic Year'){
-              return ' 2013-2021';
-            } else if (attr === 'Degree'){
-                return ' all degrees';
-            } else if (attr === 'Faculty'){
-                return ' all faculties';
-            } else if (attr === 'Study Status'){
-                return ' all study statuses';
-            } else if (attr === 'Age'){
-                return ' all ages';
-            } else if (attr === 'Sex'){
-                return ' all sexes';
-            } else if (attr === 'Citizenship Status'){
-                return ' all citizenship statuses';
-            }
-        }
-        for (const attr in academicValues){
-          if (academicValues[attr].length === 1 && academicValues[attr][0] === 'Total'){
-            list.push(getAttrAsTitle(attr));
-          }
-        }
-        for (const attr in diversityValues){
-          if (diversityValues[attr].length === 0){
-            list.push(getAttrAsTitle(attr));
-          }
-        }
-        if (list.length == 0) return '';
-        if (list.length == 1) return 'Students across ' + list.pop() + '.'; 
-        return 'Students across ' + list.slice(0, -1).join() + ' and ' + list.pop() + '.';
-    	};
+
     
-    	d3.select('#viz-title-text')
-        .style('font-size', attrs.titleTextSize)
-        .text(titleBuilder(academicValues, diversityValues));
     	this.update();
   }
   
   update(){
     	const attrs = this.getChartState();
+
 			const sb = this;
     
     	// repurposing back button if necessary
@@ -311,8 +277,6 @@ export class RingDiagram {
     	const totalRings = attrs.totalRings;
     	const isCompareMode = attrs.isCompareMode;
       document.getElementById('compare-button').innerHTML = isCompareMode ? 'Conjoin' : 'Compare'; 
-    
-    
     
       const [width, height] = this.computeScreenDimensions();
     	const [cellSize, rows, cols] = this.computeCellDimensions(width, height, (isCompareMode) ? totalSlices : 1);
@@ -401,42 +365,113 @@ export class RingDiagram {
 
       // Make arcs
       pieGroups.selectAll("path")
-        .data(generatePie, d=> {console.log(d); return d})
+        .data(generatePie, d=> d.data.ringNumber + d.data.sliceNumber)
         .join(
-          enter => enter
+          enter => {
+        				let arcs = enter
                   .append('path')
         					.attr('stroke', 'white')
-        					.attr('stroke-width', '2px')
-                  .attr('opacity', 1)
-        					,
-                  update => update
-                          .transition("arcIntTr").duration(attrs.duration)
-                          .attrTween('d', arcTween),
-                  exit => exit
-                          .transition().duration(attrs.duration)
-                          .style('opacity', 0)
-                          .on('end', function() {
-                            d3.select(this).remove();
-                        })
-          ).attr('class', d => fixCategory(d.data.category))
-                  .attr('fill', d => attrs.color[d.data.category])
-                  .attr('d', generateArc)
-                  .each(function(d){ this._current = d; })
+        					.attr('stroke-width', '1px')
+                  .attr('opacity', 0)
+        					.attr('class', d => fixCategory(d.data.category))
+          				.attr('fill', d => attrs.color[d.data.category])
+          				.attr('d', generateArc)
         					.on('mouseover', function (d, i) {
+                    //highlight arc
+                    d3.select(this)
+                      .transition().duration('50')
+                      .attr('opacity', '.85')
 
-                    	//highlight arc
-                  		d3.select(this)
+                    //highlight legend 
+                    d3.select("[id='" + d.data.category + "rect']")
+                      .style('stroke-width', 3);
+
+                    const updateCircleText = (d, sliceNumber) => {
+                          let count = d.value;
+                          let centerGroup = "#center"+sliceNumber
+                          if (count==0){
+                            d3.select(centerGroup+"> .category").text('').attr('opacity', '1');
+                            d3.select(centerGroup+"> .num_students").text('No Students').attr('opacity', '1');
+                            d3.select(centerGroup+"> .percent_in_group").text('0%').attr('opacity', '1');
+                          } else {
+                            let sliceArcLength = (Math.PI*2) / (attrs.isCompareMode ? 1 : totalSlices); 
+                            let percent = (d.endAngle-d.startAngle)/sliceArcLength;
+                            d3.select(centerGroup+"> .category").text((d.data.group === 'Age' ? 'Age: ' : '') + d.data.category).attr('opacity', '1');
+                            d3.select(centerGroup+"> .num_students").text((d.value < 5) ? '<5' : d.value).attr('opacity', '1');
+                            d3.select(centerGroup+"> .percent_in_group").text(Number((percent * 100).toFixed(1)) + '%').attr('opacity', '1');
+                          }
+                    }
+
+                    //update circle text
+                    if (attrs.isCompareMode){
+                      d3.selectAll("path." + fixCategory(d.data.category))
+                        .each(d => {
+                          updateCircleText(d, d.data.sliceNumber);
+                        });
+                    } else {
+                      updateCircleText(d, circleArray.length-1);
+                    }
+                  })
+                .on('mouseout', function (d, i) {
+                    //unhighlight arc
+                    d3.select(this)
+                      .transition().duration('50')
+                      .attr('opacity', '1')
+
+                    //unhighlight legend
+                    d3.select("[id='" + d.data.category + "rect']")
+                      .style('stroke-width', 1);
+
+                    //reset circle text
+                    d3.selectAll(".center > .category").text(attrs.placeholderInnerText1).attr('opacity', '0.5');
+                    d3.selectAll(".center > .num_students").text(attrs.placeholderInnerText2).attr('opacity', '0.5');
+                    d3.selectAll(".center > .percent_in_group").text(attrs.placeholderInnerText3).attr('opacity', '0.5');
+                }).on('click', function(d, i) {
+                    if (totalRings <= 1){
+                      alert("Cannot display more detail");
+                      return;
+                    }
+
+                    attrs.history.push(attrs.pies);
+
+                    let newPies = JSON.parse(JSON.stringify(attrs.pies));
+                    newPies = newPies.filter(p => p[0].group != d.data.group);
+
+                    let ringNumber = d.data.ringNumber;
+                    const index = attrs.attributeIndex.indexOf(d.data.group);
+                    newPies.forEach(p => { 
+                      p.forEach(s=> {
+                        s.query[index] = d.data.category; 
+                        if (s.ringNumber > ringNumber) s.ringNumber-=1;
+                      })
+                    });
+
+                    d3.select(this).remove();
+                    attrs.pies = newPies;
+                    sb.update();
+                })
+                
+                arcs.transition().duration(200)
+                          .style('opacity', 1)
+            		return arcs;
+                },
+              update => update.attr('class', d => fixCategory(d.data.category))
+                    .attr('fill', d => attrs.color[d.data.category])
+                    .attr('d', generateArc)
+                    .on('mouseover', function (d, i) {
+                      //highlight arc
+                      d3.select(this)
                         .transition().duration('50')
                         .attr('opacity', '.85')
-                    
-                    	//highlight legend 
-                    	d3.select("[id='" + d.data.category + "rect']")
+
+                      //highlight legend 
+                      d3.select("[id='" + d.data.category + "rect']")
                         .style('stroke-width', 3);
-        
-                    	const updateCircleText = (d, sliceNumber) => {
-                      	 		let count = d.value;
-                          	let centerGroup = "#center"+sliceNumber
-                          	if (count==0){
+
+                      const updateCircleText = (d, sliceNumber) => {
+                            let count = d.value;
+                            let centerGroup = "#center"+sliceNumber
+                            if (count==0){
                               d3.select(centerGroup+"> .category").text('').attr('opacity', '1');
                               d3.select(centerGroup+"> .num_students").text('No Students').attr('opacity', '1');
                               d3.select(centerGroup+"> .percent_in_group").text('0%').attr('opacity', '1');
@@ -448,17 +483,17 @@ export class RingDiagram {
                               d3.select(centerGroup+"> .percent_in_group").text(Number((percent * 100).toFixed(1)) + '%').attr('opacity', '1');
                             }
                       }
-                    
-                    	//update circle text
-                    	if (attrs.isCompareMode){
-                      	d3.selectAll("path." + fixCategory(d.data.category))
+
+                      //update circle text
+                      if (attrs.isCompareMode){
+                        d3.selectAll("path." + fixCategory(d.data.category))
                           .each(d => {
-                          	updateCircleText(d, d.data.sliceNumber);
-                        	});
+                            updateCircleText(d, d.data.sliceNumber);
+                          });
                       } else {
                         updateCircleText(d, circleArray.length-1);
                       }
-                  	})
+                    })
                   .on('mouseout', function (d, i) {
                       //unhighlight arc
                       d3.select(this)
@@ -474,29 +509,40 @@ export class RingDiagram {
                       d3.selectAll(".center > .num_students").text(attrs.placeholderInnerText2).attr('opacity', '0.5');
                       d3.selectAll(".center > .percent_in_group").text(attrs.placeholderInnerText3).attr('opacity', '0.5');
                   }).on('click', function(d, i) {
-											if (totalRings <= 1){
-                      	alert("Cannot display more detail");
+                      if (totalRings <= 1){
+                        alert("Cannot display more detail");
                         return;
                       }
-                    
-                    	attrs.history.push(attrs.pies);
-                    
-                    	let newPies = JSON.parse(JSON.stringify(attrs.pies));
-                    	newPies = newPies.filter(p => p[0].group != d.data.group);
 
-                    	let ringNumber = d.data.ringNumber;
-                    	const index = attrs.attributeIndex.indexOf(d.data.group);
-                    	newPies.forEach(p => { 
+                      attrs.history.push(attrs.pies);
+
+                      let newPies = JSON.parse(JSON.stringify(attrs.pies));
+                      newPies = newPies.filter(p => p[0].group != d.data.group);
+
+                      let ringNumber = d.data.ringNumber;
+                      const index = attrs.attributeIndex.indexOf(d.data.group);
+                      newPies.forEach(p => { 
                         p.forEach(s=> {
-                        	s.query[index] = d.data.category; 
-                        	if (s.ringNumber > ringNumber) s.ringNumber-=1;
+                          s.query[index] = d.data.category; 
+                          if (s.ringNumber > ringNumber) s.ringNumber-=1;
                         })
                       });
-                    
-                    	d3.select(this).remove();
-                    	attrs.pies = newPies;
-                    	sb.update();
+
+                      d3.select(this).remove();
+                      attrs.pies = newPies;
+                      sb.update();
                   })
+                  .transition("arcIntTr").duration(attrs.duration)
+                  .attrTween('d', arcTween),
+                  exit => exit
+                          .transition().duration(attrs.duration)
+                          .style('opacity', 0)
+                          .on('end', function() {
+                            d3.select(this).remove();
+                        })
+          )
+          //.each(function(d){ this._current = d; }) //overrides transitions
+          
     	// Make lines
     	const getCircleX = (radians, radius) => Math.sin(radians) * radius;
       const getCircleY = (radians, radius) => Math.cos(radians) * radius;
@@ -535,7 +581,7 @@ export class RingDiagram {
                   enter
                     .append('line')
                     .style('stroke', 'black')
-                    .style('stroke-width', 3)
+                    .style('stroke-width', 2)
                     .attr('x1', radians => getCircleX(radians, innerRadius))
                     .attr('y1', radians => getCircleY(radians, innerRadius))
                     .attr('x2', radians => getCircleX(radians, innerRadius + lineLength))
@@ -636,7 +682,7 @@ export class RingDiagram {
                                         .attr('cy', 0)
                                         .attr('r', innerRadius)
                                         .attr('stroke', 'black')
-                                        .style('stroke-width', 3)
+                                        .style('stroke-width', 2)
                                         .attr('fill', 'white')
                                   const appendTextElement = (dy, name, text) => {
                                       centerGroup
@@ -667,16 +713,62 @@ export class RingDiagram {
                                           },
                               	exit => exit.remove()
                             );
-      //circleGroups
     	circleGroups.raise();
+
+    	this.renderTitle();	
     	this.renderLegend();
   }
   
+  renderTitle(){
+    let attrs = this.getChartState();
+
+    const titleBuilder = (academicValues, diversityValues) => {
+        let list = [];
+        const getAttrAsTitle = (attr) => {
+           if (attr === 'Academic Year'){
+              return ' 2013-2021';
+            } else if (attr === 'Degree'){
+                return ' all degrees';
+            } else if (attr === 'Faculty'){
+                return ' all faculties';
+            } else if (attr === 'Study Status'){
+                return ' all study statuses';
+            } else if (attr === 'Age'){
+                return ' all ages';
+            } else if (attr === 'Sex'){
+                return ' all sexes';
+            } else if (attr === 'Citizenship Status'){
+                return ' all citizenship statuses';
+            }
+        }
+        for (const attr in academicValues){
+          if (academicValues[attr].length === 1 && academicValues[attr][0] === 'Total'){
+            list.push(getAttrAsTitle(attr));
+          }
+        }
+        for (const attr of diversityValues){
+          list.push(getAttrAsTitle(attr));
+        }
+      	
+        if (list.length == 0) return '';
+        if (list.length == 1) return 'Students across ' + list.pop() + '.'; 
+        return 'Students across ' + list.slice(0, -1).join() + ' and ' + list.pop() + '.';
+    	};
+    
+    	let diversityValues = new Set(["Age","Sex","Citizenship Status"]);
+    	for (let arc in attrs.pies){
+      	diversityValues.delete(attrs.pies[arc][0].group);
+      }
+    	
+    	
+    	d3.select('#viz-title-text')
+        .style('font-size', attrs.titleTextSize)
+        .text(titleBuilder(attrs.academicValues, diversityValues));
+  }
 
   renderLegend() {
     let attrs = this.getChartState();
 
-    console.log(attrs.rings);
 
     //hierarchial tree legend
     let legend = d3

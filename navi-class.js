@@ -279,7 +279,7 @@ export class Sunburst {
                 }
     
                 d3.event.stopPropagation();
-              		console.log("clciked arc");
+              	
               	if (d.children){
                   focusOn(d);
                 } else {
@@ -473,7 +473,7 @@ export class Sunburst {
     						.style('stroke-width',1)
     						.attr('fill', this.rgbaObjToColor(colors.White))
     						.on('click', d => {
-          							console.log("clciked select all");
+          			
           							attrs.focussed = d;
           							selectAll();
           							attrs.focussed = null;
