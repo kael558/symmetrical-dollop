@@ -62,7 +62,6 @@ Visualization is accessible [here](https://kael558.github.io/symmetrical-dollop/
 ## Roadmap
 - [ ] Put category within arc to allow the user to identify the category more easily
 - [ ] Make text go from inward to outward, so more text is displayed
-- [ ] Have title update on arc click
 - [ ] Have ring size update on arc click
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
